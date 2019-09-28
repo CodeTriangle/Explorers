@@ -5,10 +5,25 @@
 
 #include <allegro5/allegro.h>
 
+#include "constants.hpp"
+
+#define complex_draw_bitmap al_draw_tinted_scaled_rotated_bitmap_region
+
 typedef struct {
-  ALLEGRO_BITMAP* bitmap;
+  ALLEGRO_BITMAP *bitmap;
   float tx, ty;
 } tile;
+
+tile create_tile(ALLEGRO_BITMAP *bm, float tx = 0, float ty = 0) {
+  return (tile) {.bitmap = bm, .tx = tx, .ty = ty};
+}
+
+tile create_colored_tile(int w, int h, unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
+  tile t = {.bitmap = al_create_bitmap(w, h), .tx = 0, .ty = 0};
+  al_set_target_bitmap(t.bitmap);
+  al_clear_to_color(al_map_rgba(r, g, b, a));
+  return t;
+}
 
 typedef struct {
   int width, height;
@@ -53,17 +68,19 @@ bool add_tile_to_tilemap(tile *t, tilemap *tm, int r = -1, int c = -1) {
   return true;
 }
 
-void draw_tilemap(tilemap *tm) {
+void draw_tilemap(tilemap *tm, float scale_factor) {
   for (int row = 0; row < tm->tiles.size(); row++)
     for (int column = 0; column < tm->tiles[row].size(); column++)
-      al_draw_bitmap_region(tm->tiles[row][column]->bitmap,
-			    tm->tile_size * tm->tiles[row][column]->tx,
-			    tm->tile_size * tm->tiles[row][column]->ty,
-			    TILE_SIZE,
-			    TILE_SIZE,
-			    tm->tile_size * column,
-			    tm->tile_size * row,
-			    0);
+      complex_draw_bitmap(tm->tiles[row][column]->bitmap,
+			  tm->tile_size * tm->tiles[row][column]->tx, // sx
+			  tm->tile_size * tm->tiles[row][column]->ty, // sy
+			  tm->tile_size, tm->tile_size, // sw, sh
+			  al_map_rgb(255,255,255), // tint
+			  0, 0, // cx, cy
+			  tm->tile_size * column * SCALE_FACTOR, // dx
+			  tm->tile_size * row * SCALE_FACTOR, //dy
+			  SCALE_FACTOR, SCALE_FACTOR, // xscale, yscale
+			  0, 0); // angle, flags
 }
 
 #endif
