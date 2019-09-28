@@ -20,8 +20,8 @@ level read_level(const char *fn) {
   std::ifstream ls(fn);
   
   for (int i = 0; i < 4; i++) {
-    char s[3];
-    ls.getline(s, 2, ',');
+    char s[4];
+    ls.getline(s, 3, ',');
     switch (i) {
     case 0:
       l.width = atoi(s);
@@ -38,9 +38,9 @@ level read_level(const char *fn) {
     }
   }
 
-  l.back   = create_tilemap(l.width, l.height+1, 16, &EMPTY);
-  l.fore   = create_tilemap(l.width, l.height+1, 16, &EMPTY);
-  l.rubble = create_tilemap(l.width, l.height+1, 16, &EMPTY);
+  l.back   = create_tilemap(l.width, l.height+1, 16, &MATERIALS["EMPTY"]);
+  l.fore   = create_tilemap(l.width, l.height+1, 16, &MATERIALS["EMPTY"]);
+  l.rubble = create_tilemap(l.width, l.height+1, 16, &MATERIALS["EMPTY"]);
 
   ls.get();
 
@@ -57,34 +57,39 @@ level read_level(const char *fn) {
 	tile *b = NULL, *f = NULL, *r = NULL;
 	switch (c) {
 	case '-':
-	  b = &GROUND;
+	  b = &MATERIALS["GROUND"];
 	  break;
 	case 'W':
-	  b = &WALL;
+	  b = &MATERIALS["WALL"];
 	  break;
 	case 'V':
-	  b = &WALL;
-	  r = &VINE;
+	  b = &MATERIALS["WALL"];
+	  r = &MATERIALS["VINE"];
 	  break;
 	case 'X':
-	  b = &BROKEN;
+	  b = &MATERIALS["BROKEN"];
 	  break;
 	case 'O':
-	  b = &PIT;
+	  b = &MATERIALS["PIT"];
+	  break;
+	case '=':
+	  b = &MATERIALS["BRIDGE"];
 	  break;
 	case 'B':
-	  f = &BLOCK;
-	  b = &GROUND;
+	  f = &MATERIALS["BLOCK"];
+	  b = &MATERIALS["GROUND"];
 	  break;
 	case '_':
-	  b = &GROUND;
+	  b = &MATERIALS["GROUND"];
+	  f = &MATERIALS["BUTTON"];
 	  break;
 	case '+':
-	  b = &METAL;
+	  b = &MATERIALS["METAL"];
 	  break;
 	case 'R':
-	  b = &GROUND;
-	  r = &RUBBLE;
+	  b = &MATERIALS["GROUND"];
+	  r = &MATERIALS["RUBBLE"];
+	  break;
 	}
 	if (b != NULL)
 	  add_tile_to_tilemap(b, &l.back, currow, curcol);
@@ -97,6 +102,8 @@ level read_level(const char *fn) {
       }
     }
   }
+
+  ls.close();
 
   return l;
 }

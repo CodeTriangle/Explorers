@@ -18,6 +18,11 @@ tile create_tile(ALLEGRO_BITMAP *bm, float tx = 0, float ty = 0) {
   return (tile) {.bitmap = bm, .tx = tx, .ty = ty};
 }
 
+void destroy_tile(tile *t) {
+  al_destroy_bitmap(t->bitmap);
+  free(t);
+}
+
 tile create_colored_tile(int w, int h, unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
   tile t = {.bitmap = al_create_bitmap(w, h), .tx = 0, .ty = 0};
   al_set_target_bitmap(t.bitmap);

@@ -1,26 +1,44 @@
 #ifndef TILES_HPP
 #define TILES_HPP
 
+#include <fstream>
+#include <map>
+#include <string>
+#include <cstdlib>
+
 #include <allegro5/allegro.h>
 
 #include "tilemap.hpp"
 
-tile EMPTY, GROUND, WALL, VINE, BROKEN, PIT, BRIDGE, HOLE, BLOCK,
-  BUTTON, METAL, RUBBLE;
+std::map<std::string, tile> MATERIALS;
+std::map<char, tile*[3]> CHARS;
 
-void init_tiles() {
-  EMPTY  = create_colored_tile(16, 16, 0,   0,   0,   0);
-  GROUND = create_colored_tile(16, 16, 150, 150, 150, 255);
-  WALL   = create_colored_tile(16, 16, 200, 200, 200, 255);
-  VINE   = create_colored_tile(16, 16, 100, 100, 255, 255);
-  BROKEN = create_colored_tile(16, 16, 100, 100, 100, 255);
-  PIT    = create_colored_tile(16, 16, 50,  50,  50,  255);
-  BRIDGE = create_colored_tile(16, 16, 255, 230, 180, 255);
-  HOLE   = create_colored_tile(16, 16, 10,  10,  10,  255);
-  BLOCK  = create_colored_tile(16, 16, 75,  75,  75,  255);
-  BUTTON = create_colored_tile(16, 16, 100, 90,  90,  255);
-  METAL  = create_colored_tile(16, 16, 90,  90,  100, 255);
-  RUBBLE = create_colored_tile(16, 16, 100, 100, 50,  255);
+void init_materials() {
+  std::ifstream ms("assets/materials");
+
+  while (ms.good()) {
+    char name[7], func[3];
+    ms.getline(name, 7, ' ');
+    ms.getline(func, 3, ':');
+
+    if (std::string(func) == "ct") {
+      unsigned char a[4];
+      
+      for (int i = 0; i < 4; i++) {
+	char c[4];
+	ms.getline(c, 5, ',');
+	a[i] = (unsigned char) atoi(c);
+      }
+      
+      MATERIALS.insert(std::pair<std::string, tile>(std::string(name),
+						    create_colored_tile(16, 16,
+									a[0], a[1],
+								        a[2], a[3])));
+      ms.get();
+    }
+  }
+
+  ms.close();
 }
 
 #endif

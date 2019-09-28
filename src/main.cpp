@@ -15,6 +15,8 @@ int main(int argc, char **argv) {
   
   bool loop = true, redraw = true;
 
+  bool future = false, travel = false;
+
   al_init();
   al_install_keyboard();
 
@@ -26,7 +28,7 @@ int main(int argc, char **argv) {
   al_register_event_source(event_queue, al_get_display_event_source(display));
   al_register_event_source(event_queue, al_get_timer_event_source(frame_timer));
 
-  init_tiles();
+  init_materials(); 
 
   l = read_level("assets/5.lv");
 
@@ -38,14 +40,22 @@ int main(int argc, char **argv) {
     al_wait_for_event(event_queue, &e);
 
     if (e.type == ALLEGRO_EVENT_TIMER) {
-      al_clear_to_color(al_map_rgb(0,0,0));
-      draw_tilemap(&l.back, SCALE_FACTOR);
-      draw_tilemap(&l.fore, SCALE_FACTOR);
-      draw_tilemap(&l.rubble, SCALE_FACTOR);
-      al_flip_display();
+    }
+    else if (e.type == ALLEGRO_EVENT_KEY_DOWN) {
     }
     else if (e.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
       loop = false;
+    }
+
+    if (redraw && al_is_event_queue_empty(event_queue)) {
+      al_clear_to_color(al_map_rgb(0,0,0));
+      
+      draw_tilemap(&l.back, SCALE_FACTOR);
+      draw_tilemap(&l.fore, SCALE_FACTOR);
+      if (future)
+	draw_tilemap(&l.rubble, SCALE_FACTOR);
+      
+      al_flip_display();
     }
   }
 }
