@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <map>
+#include <array>
 #include <string>
 #include <cstdlib>
 
@@ -11,7 +12,7 @@
 #include "tilemap.hpp"
 
 std::map<std::string, tile> MATERIALS;
-std::map<char, tile*[3]> CHARS;
+std::map<char, std::array<tile*, 3>> CHARS;
 
 void init_materials() {
   std::ifstream ms("assets/materials");
@@ -34,11 +35,33 @@ void init_materials() {
 						    create_colored_tile(16, 16,
 									a[0], a[1],
 								        a[2], a[3])));
+      
       ms.get();
     }
   }
-
   ms.close();
+  
+  ms.open("assets/chars");
+
+  while (ms.good()) {
+    char name[2];
+    ms.getline(name, 2, ' ');
+
+    std::array<tile*, 3> a;
+
+    for (int i = 0; i < 3; i++) {
+      char m[7];
+      ms.getline(m, 7, ',');
+      if (std::string(m) == "")
+	a[i] = &MATERIALS["EMPTY"];
+      else
+	a[i] = &MATERIALS[std::string(m)];
+    }
+
+    CHARS.insert(std::make_pair(name[0], a));
+
+    ms.get();
+  }
 }
 
 #endif

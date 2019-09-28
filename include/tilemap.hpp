@@ -82,9 +82,9 @@ void draw_tilemap(tilemap *tm, float scale_factor) {
 			  tm->tile_size, tm->tile_size, // sw, sh
 			  al_map_rgb(255,255,255), // tint
 			  0, 0, // cx, cy
-			  tm->tile_size * column * SCALE_FACTOR, // dx
-			  tm->tile_size * row * SCALE_FACTOR, //dy
-			  SCALE_FACTOR, SCALE_FACTOR, // xscale, yscale
+			  tm->tile_size * column * scale_factor, // dx
+			  tm->tile_size * row * scale_factor, //dy
+			  scale_factor, scale_factor, // xscale, yscale
 			  0, 0); // angle, flags
 }
 
