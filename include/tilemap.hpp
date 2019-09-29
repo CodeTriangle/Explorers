@@ -64,7 +64,7 @@ public:
     this->tiles[r][c] = t;
   }
 
-  void draw(float scale_factor) {
+  void draw(float ox, float oy, float scale_factor) {
   for (int row = 0; row < this->tiles.size(); row++)
     for (int column = 0; column < this->tiles[row].size(); column++)
       complex_draw_bitmap(this->tiles[row][column]->bitmap,
@@ -73,8 +73,8 @@ public:
 			  this->tile_size, this->tile_size, // sw, sh
 			  al_map_rgb(255,255,255), // tint
 			  0.0, 0.0, // cx, cy
-			  this->tile_size * column * scale_factor, // dx
-			  this->tile_size * row * scale_factor, //dy
+			  ox + this->tile_size * column * scale_factor, // dx
+			  oy + this->tile_size * row * scale_factor, //dy
 			  scale_factor, scale_factor, // xscale, yscale
 			  0, 0); // angle, flags
   }
