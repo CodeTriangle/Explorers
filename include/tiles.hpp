@@ -63,42 +63,4 @@ void init_materials() {
   }
 }
 
-void read_level(tilemap *b, tilemap *f, tilemap *r, std::string fn) {
-  std::ifstream ls(fn);
-
-  int a[4];
-
-  for (int i = 0; i < 4; i++) {
-    char numbers[4];
-    ls.getline(numbers, 4, ',');
-    a[i] = atoi(numbers);
-  }
-
-  a[1]++;
-
-  b->create(a[0],a[1],16,&MATERIALS["EMPTY"]);
-  f->create(a[0],a[1],16,&MATERIALS["EMPTY"]);
-  r->create(a[0],a[1],16,&MATERIALS["EMPTY"]);
-
-  ls.get();
-
-  for (int i = 0; i < a[1]; i++) {
-    char row[7];
-    ls.getline(row, 7);
-    for (int j = 0; j < a[0]; j++) {
-      if (row[j] == '\0')
-	break;
-      else {
-	std::array<tile*, 3> t = CHARS[row[j]];
-	if (t[0] != NULL)
-	  b->add(t[0], i, j);
-	if (t[1] != NULL)
-	  f->add(t[1], i, j);
-	if (t[2] != NULL)
-	  r->add(t[2], i, j);
-      }
-    }
-  }
-}
-
 #endif

@@ -5,6 +5,7 @@
 #include "../include/tilemap.hpp"
 #include "../include/constants.hpp"
 #include "../include/tiles.hpp"
+#include "../include/level.hpp"
 
 int main(int argc, char **argv) {
   ALLEGRO_DISPLAY *display;
@@ -32,11 +33,9 @@ int main(int argc, char **argv) {
 
   tilemap back, fore, rubble;
   
-  read_level(&back, &fore, &rubble, "assets/5.lv");
+  level l("assets/5.lv");
 
-  scale_factor = std::min(al_get_display_width(display) / (8 * 16), al_get_display_height(display) / (6 * 16));
-  origin_x = al_get_display_width(display) / 2 - back.width * back.tile_size * scale_factor / 2;
-  origin_y = al_get_display_height(display) / 2 - back.height * back.tile_size * scale_factor / 2; 
+  l.justify(al_get_display_width(display), al_get_display_height(display));
 
   al_set_target_bitmap(al_get_backbuffer(display)); 
   al_start_timer(frame_timer);
@@ -51,10 +50,7 @@ int main(int argc, char **argv) {
     else if (e.type == ALLEGRO_EVENT_KEY_DOWN) {
     }
     else if (e.type == ALLEGRO_EVENT_DISPLAY_RESIZE) {
-        scale_factor = std::min(al_get_display_width(display) / (8 * 16), al_get_display_height(display) / (6 * 16));
-        origin_x = al_get_display_width(display) / 2 - back.width * back.tile_size * scale_factor / 2;
-        origin_y = al_get_display_height(display) / 2 - back.height * back.tile_size * scale_factor / 2; 
-
+      l.justify(e.display.width, e.display.height);
     }
     else if (e.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
       loop = false;
@@ -63,10 +59,8 @@ int main(int argc, char **argv) {
     if (redraw && al_is_event_queue_empty(event_queue)) {
       redraw = false;
       al_clear_to_color(al_map_rgb(0,0,0));
-      
-      back.draw(origin_x, origin_y, scale_factor);
-      fore.draw(origin_x, origin_y, scale_factor);
-      rubble.draw(origin_x, origin_y, scale_factor); 
+
+      l.draw();
       
       al_flip_display();
     }
