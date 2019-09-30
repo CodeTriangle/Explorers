@@ -88,4 +88,12 @@ void init_materials() {
   }
 }
 
+bool is_collidable(tile* t) {
+  if (t == &MATERIALS["WALL"] ||
+      t == &MATERIALS["RUBBLE"] ||
+      t == &MATERIALS["SWITCH"])
+    return true;
+  return false;
+}
+
 #endif

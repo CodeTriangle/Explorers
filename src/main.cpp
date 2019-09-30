@@ -1,4 +1,6 @@
-#include <algorithm> 
+#include <vector>
+#include <algorithm>
+#include <cstdio>
 
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_image.h>
@@ -17,7 +19,9 @@ int main(int argc, char **argv) {
   
   bool loop = true, redraw = true;
 
-  bool held = false;
+  bool held = false, check_done = false;
+
+  int current_level = 0;
 
   int direction = -1;
 
@@ -36,7 +40,7 @@ int main(int argc, char **argv) {
 
   init_materials();
   
-  level l("assets/5.lv"); 
+  level l("assets/5.lv");
 
   l.justify(al_get_display_width(display), al_get_display_height(display));
 
@@ -49,9 +53,9 @@ int main(int argc, char **argv) {
 
     if (e.type == ALLEGRO_EVENT_TIMER) {
       redraw = true;
-
+      
       if (held) {
-	l.move_player(direction);
+	check_done = l.move_player(direction);
 	held = false;
       }
     }

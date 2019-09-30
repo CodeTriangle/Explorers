@@ -18,6 +18,7 @@ public:
   int player_r, player_c;
   tilemap back, fore, rubble;
   bool future, travel;
+  bool done;
   
   level(std::string fn) {
     std::ifstream ls(fn);
@@ -38,6 +39,7 @@ public:
     this->exitp  = a[5];
     this->future = false;
     this->travel = false;
+    this->done   = false;
   
     this->back.create(this->width,this->height,16,&MATERIALS["EMPTY"]);
     this->fore.create(this->width,this->height,16,&MATERIALS["EMPTY"]);
@@ -93,32 +95,81 @@ public:
     origin_y = dh / 2 - this->height * 16 * scale_factor / 2; 
   }
 
-  void move_tile(int r, int c, int d) {
-  }
+  bool move_tile(int r, int c, int d) {
+    int target_r = r, target_c = c;
+    bool can_move = false, check_done = false;
+    tile* to_move = fore.contents(r, c);
+    if (d == 0) {
+      if (r == 1)
+        check_done = true;
+      else
+	target_r--;
+    }
+    else if (d == 1) {
+      if (c == this->width - 1)
+	check_done = true;
+      else
+	target_c++;
+    }
+    else if (d == 2) {
+      if (r == this->height - 1)
+	check_done = true;
+      else
+	target_r++;
+    }
+    else if (d == 3) {
+      if (c == 0)
+	check_done = true;
+      else
+	target_c--;
+    }
 
-  void move_player(int d) {
-    int target_r = player_r, target_c = player_c;
-    bool can_move = false;
-    if (d == 0 && player_r != 0)
-      target_r--;
-    else if (d == 1 && player_c != this->width - 1)
-      target_c++;
-    else if (d == 2 && player_r != this->height - 1)
-      target_r++;
-    else if (d == 3 && player_c != 0)
-      target_c--;
+    if (check_done) {
+      if (d%2 == 0) {
+	if (c == exitp)
+	  done = true;
+      }
+      else if (r == exitp)
+	done = true;
+      return false;
+    }
 
-    if (fore.contents(target_r, target_c) == &MATERIALS["EMPTY"] &&
-	back.contents(target_r, target_c) == &MATERIALS["GROUND"]) {
+    if (target_r == r && target_c == c)
+      return false;
+
+    if (is_collidable(fore.contents(target_r, target_c)) ||
+	is_collidable(back.contents(target_r, target_c)))
+      return false;
+    else
       can_move = true;
+
+    if (future) {
+      can_move = false;
+      if(is_collidable(rubble.contents(target_r, target_c)))
+	can_move = true;
+    }
+    
+    if (fore.contents(target_r, target_c) == &MATERIALS["BLOCK"]) {
+      can_move = false;
+      if(move_tile(target_r, target_c, d))
+	can_move = true;
     }
 
     if (can_move) {
-      fore.remove(player_r, player_c);
-      player_r = target_r;
-      player_c = target_c;
-      fore.add(&MATERIALS["PLAYER"], player_r, player_c);
+      fore.add(fore.contents(r, c), target_r, target_c);
+      if (to_move == &MATERIALS["PLAYER"]) {
+	player_r = target_r;
+	player_c = target_c;
+      }
+      fore.remove(r, c);
+      return true;
     }
+    else
+      return false;
+  }
+
+  bool move_player(int d) {
+    return move_tile(player_r, player_c, d);
   }
 
   void draw() {
