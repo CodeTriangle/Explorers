@@ -4,7 +4,7 @@
 
 #include "../include/tilemap.hpp"
 #include "../include/constants.hpp"
-#include "../include/tiles.hpp"
+#include "../include/materials.hpp"
 #include "../include/level.hpp"
 
 int main(int argc, char **argv) {
@@ -30,8 +30,6 @@ int main(int argc, char **argv) {
   al_register_event_source(event_queue, al_get_timer_event_source(frame_timer));
 
   init_materials();
-
-  tilemap back, fore, rubble;
   
   level l("assets/5.lv");
 

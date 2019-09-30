@@ -6,10 +6,12 @@
 #include <allegro5/allegro.h>
 
 #include "tilemap.hpp"
+#include "materials.hpp"
 
 class level {
 public:
   int width, height;
+  int enter, exit;
   int scale_factor;
   int origin_x, origin_y;
   tilemap back, fore, rubble;
@@ -27,6 +29,8 @@ public:
 
     this->width  = a[0];
     this->height = a[1]+1;
+    this->enter  = a[2];
+    this->exit   = a[3];
   
     this->back.create(this->width,this->height,16,&MATERIALS["EMPTY"]);
     this->fore.create(this->width,this->height,16,&MATERIALS["EMPTY"]);
