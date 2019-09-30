@@ -31,68 +31,68 @@ public:
       a[i] = atoi(numbers);
     }
 
-    this->width  = a[0];
-    this->height = a[1]+1;
-    this->enterd = a[2];
-    this->enterp = a[3];
-    this->exitd  = a[4];
-    this->exitp  = a[5];
-    this->future = false;
-    this->travel = false;
-    this->done   = false;
+    width  = a[0];
+    height = a[1]+1;
+    enterd = a[2];
+    enterp = a[3];
+    exitd  = a[4];
+    exitp  = a[5];
+    future = false;
+    travel = false;
+    done   = false;
   
-    this->back.create(this->width,this->height,16,&MATERIALS["EMPTY"]);
-    this->fore.create(this->width,this->height,16,&MATERIALS["EMPTY"]);
-    this->rubble.create(this->width,this->height,16,&MATERIALS["EMPTY"]);
+    back.create(width,height,16,&MATERIALS["EMPTY"]);
+    fore.create(width,height,16,&MATERIALS["EMPTY"]);
+    rubble.create(width,height,16,&MATERIALS["EMPTY"]);
   
     ls.get();
   
-    for (int i = 0; i < this->height; i++) {
+    for (int i = 0; i < height; i++) {
       char row[7];
       ls.getline(row, 7);
-      for (int j = 0; j < this->width; j++) {
+      for (int j = 0; j < width; j++) {
         if (row[j] == '\0')
           break;
         else {
           std::array<tile*, 3> t = CHARS[row[j]];
           if (t[0] != NULL)
-            this->back.add(t[0], i, j);
+            back.add(t[0], i, j);
           if (t[1] != NULL)
-            this->fore.add(t[1], i, j);
+            fore.add(t[1], i, j);
           if (t[2] != NULL)
-            this->rubble.add(t[2], i, j);
+            rubble.add(t[2], i, j);
         }
       }
     }
 
     if (enterp == -1) {
-      this->player_r = 2;
-      this->player_c = 2;
+      player_r = 2;
+      player_c = 2;
     }
     else if (enterd == 0) {
-      this->player_r = 1;
-      this->player_c = enterp;
+      player_r = 1;
+      player_c = enterp;
     }
     else if (enterd == 1) {
-      this->player_r = enterp;
-      this->player_c = this->width;
+      player_r = enterp;
+      player_c = width;
     }
     else if (enterd == 2) {
-      this->player_r = this->height;
-      this->player_c = enterp;
+      player_r = height;
+      player_c = enterp;
     }
     else if (enterd == 3)  {
-      this->player_r = enterp;
-      this->player_c = 0;
+      player_r = enterp;
+      player_c = 0;
     }
 
-    this->fore.add(&MATERIALS["PLAYER"], player_r, player_c);
+    fore.add(&MATERIALS["PLAYER"], player_r, player_c);
   }
 
   void justify(int dw, int dh) {
     scale_factor = std::min(dw / (8 * 16), dh / (6 * 16));
-    origin_x = dw / 2 - this->width * 16 * scale_factor / 2;
-    origin_y = dh / 2 - this->height * 16 * scale_factor / 2; 
+    origin_x = dw / 2 - width * 16 * scale_factor / 2;
+    origin_y = dh / 2 - height * 16 * scale_factor / 2; 
   }
 
   bool move_tile(int r, int c, int d) {
@@ -106,13 +106,13 @@ public:
 	target_r--;
     }
     else if (d == 1) {
-      if (c == this->width - 1)
+      if (c == width - 1)
 	check_done = true;
       else
 	target_c++;
     }
     else if (d == 2) {
-      if (r == this->height - 1)
+      if (r == height - 1)
 	check_done = true;
       else
 	target_r++;
@@ -125,12 +125,13 @@ public:
     }
 
     if (check_done) {
-      if (d%2 == 0) {
-	if (c == exitp)
+      if (d%2 == 0 && c == exitp ||
+	  d%2 == 1 && r == exitp) {
+	if (future)
 	  done = true;
+	else
+	  future = true;
       }
-      else if (r == exitp)
-	done = true;
       return false;
     }
 
@@ -146,6 +147,8 @@ public:
     if (future) {
       can_move = false;
       if(is_collidable(rubble.contents(target_r, target_c)))
+	return false;
+      else
 	can_move = true;
     }
     
@@ -173,10 +176,10 @@ public:
   }
 
   void draw() {
-    this->back.draw(origin_x, origin_y, scale_factor);
+    back.draw(origin_x, origin_y, scale_factor);
     if (future)
-      this->rubble.draw(origin_x, origin_y, scale_factor);
-    this->fore.draw(origin_x, origin_y, scale_factor);
+      rubble.draw(origin_x, origin_y, scale_factor);
+    fore.draw(origin_x, origin_y, scale_factor);
     
     // I was in a hurry so this code is not very consise
     
@@ -184,38 +187,38 @@ public:
       if (enterd == 0)
 	MATERIALS["DOOR"].draw(origin_x + enterp * TILE_SIZE * scale_factor,
 				 origin_y,
-				 this->scale_factor);
+				 scale_factor);
       else if (enterd == 1)
-	MATERIALS["GROUND"].draw(origin_x + this->width * TILE_SIZE * scale_factor,
+	MATERIALS["GROUND"].draw(origin_x + width * TILE_SIZE * scale_factor,
 				 origin_y + (enterp + 1) * TILE_SIZE * scale_factor,
-				 this->scale_factor);
+				 scale_factor);
       else if (enterd == 2)
 	MATERIALS["GROUND"].draw(origin_x + enterp * TILE_SIZE * scale_factor,
-				 origin_y + this->height * TILE_SIZE * scale_factor,
+				 origin_y + height * TILE_SIZE * scale_factor,
 				 scale_factor);
       else if (enterd == 3)
 	MATERIALS["GROUND"].draw(origin_x - TILE_SIZE * scale_factor,
 				 origin_y + (enterp + 1) * TILE_SIZE * scale_factor,
-				 this->scale_factor);
+				 scale_factor);
     }
 
     if (exitp != -1) {
       if (exitd == 0)
 	MATERIALS["DOOR"].draw(origin_x + exitp * TILE_SIZE * scale_factor,
 				 origin_y,
-				 this->scale_factor);
+				 scale_factor);
       else if (exitd == 1)
-	MATERIALS["GROUND"].draw(origin_x + this->width * TILE_SIZE * scale_factor,
+	MATERIALS["GROUND"].draw(origin_x + width * TILE_SIZE * scale_factor,
 				 origin_y + (exitp + 1) * TILE_SIZE * scale_factor,
-				 this->scale_factor);
+				 scale_factor);
       else if (exitd == 2)
 	MATERIALS["GROUND"].draw(origin_x + exitp * TILE_SIZE * scale_factor,
-				 origin_y + this->height * TILE_SIZE * scale_factor,
+				 origin_y + height * TILE_SIZE * scale_factor,
 				 scale_factor);
       else if (exitd == 3)
 	MATERIALS["GROUND"].draw(origin_x - TILE_SIZE * scale_factor,
 				 origin_y + (exitp + 1) * TILE_SIZE * scale_factor,
-				 this->scale_factor);
+				 scale_factor);
     }
   }
 };

@@ -18,27 +18,27 @@ public:
   tile() {
   }
 
-  tile(ALLEGRO_BITMAP *bm, float tx, float ty, int size) {
-    this->bitmap = bm;
-    this->tx = tx;
-    this->ty = ty;
-    this->size = size;
+  tile(ALLEGRO_BITMAP *bm, float x, float y, int size) {
+    bitmap = bm;
+    tx = x;
+    ty = y;
+    size = size;
   }
 
-  tile(int size, unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
-    this->bitmap = al_create_bitmap(size, size);
-    this->tx = 0;
-    this->ty = 0;
-    this->size = size;
-    al_set_target_bitmap(this->bitmap);
+  tile(int s, unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
+    bitmap = al_create_bitmap(s, s);
+    tx = 0;
+    ty = 0;
+    size = s;
+    al_set_target_bitmap(bitmap);
     al_clear_to_color(al_map_rgba(r, g, b, a));
   }
 
   void draw(int x, int y, int scale_factor) {
-    complex_draw_bitmap(this->bitmap,
-			this->size * this->tx, // sx
-			this->size * this->ty, // sy
-			this->size, this->size, // sw, sh
+    complex_draw_bitmap(bitmap,
+			size * tx, // sx
+			size * ty, // sy
+			size, size, // sw, sh
 			al_map_rgb(255,255,255), // tint
 			0.0, 0.0, // cx, cy
 			x, y, //dx, dy
@@ -58,21 +58,21 @@ public:
   }
 
   tilemap(int w, int h, int ts, tile *e) {
-    this->create(w, h, ts, e);
+    create(w, h, ts, e);
   }
 
   void create(int w, int h, int ts, tile *e) {
-    this->width = w;
-    this->height = h;
-    this->tile_size = ts;
-    this->empty = e;
+    width = w;
+    height = h;
+    tile_size = ts;
+    empty = e;
 
     for (int i = 0; i < h; i++) {
       std::vector<tile*> v;
       for(int j = 0; j < w; j++) {
         v.push_back(e);
       }
-      this->tiles.push_back(v);
+      tiles.push_back(v);
     }
   }
 
@@ -81,19 +81,19 @@ public:
   }
 
   void add(tile *t, int r, int c) {
-    this->tiles[r][c] = t;
+    tiles[r][c] = t;
   }
 
   void remove(int r, int c) {
-    this->tiles[r][c] = this->empty;
+    tiles[r][c] = empty;
   }
 
   void draw(float ox, float oy, float scale_factor) {
-  for (int row = 0; row < this->tiles.size(); row++)
-    for (int column = 0; column < this->tiles[row].size(); column++)
-      this->tiles[row][column]->draw(ox + this->tile_size * column * scale_factor,
-				     oy + this->tile_size * row * scale_factor,
-				     scale_factor);
+  for (int row = 0; row < tiles.size(); row++)
+    for (int column = 0; column < tiles[row].size(); column++)
+      tiles[row][column]->draw(ox + tile_size * column * scale_factor,
+			       oy + tile_size * row * scale_factor,
+			       scale_factor);
   }
 };
 

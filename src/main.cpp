@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 
   init_materials();
   
-  level l("assets/5.lv");
+  level l("assets/1.lv");
 
   l.justify(al_get_display_width(display), al_get_display_height(display));
 
