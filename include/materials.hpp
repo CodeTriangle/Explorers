@@ -33,7 +33,7 @@ void init_materials() {
 	a[i] = (unsigned char) atoi(c);
       }
 
-      tile t(16, 16, a[0], a[1], a[2], a[3]);
+      tile t(16, a[0], a[1], a[2], a[3]);
       
       MATERIALS.insert(std::make_pair(std::string(name), t));
     }
@@ -56,7 +56,7 @@ void init_materials() {
       if (IMAGES.find(rn) == IMAGES.end())
 	IMAGES.insert(std::make_pair(std::string(rn), al_load_bitmap(rn.c_str())));
 
-      tile t(IMAGES[rn], a[0], a[1]);
+      tile t(IMAGES[rn], a[0], a[1], 16);
 
       MATERIALS.insert(std::make_pair(std::string(name), t));
     }

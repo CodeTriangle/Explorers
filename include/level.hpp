@@ -11,7 +11,8 @@
 class level {
 public:
   int width, height;
-  int enter, exit;
+  int enterd, exitd;
+  int enterp, exitp;
   int scale_factor;
   int origin_x, origin_y;
   tilemap back, fore, rubble;
@@ -19,9 +20,9 @@ public:
   level(std::string fn) {
     std::ifstream ls(fn);
   
-    int a[4];
+    int a[6];
   
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 6; i++) {
       char numbers[4];
       ls.getline(numbers, 4, ',');
       a[i] = atoi(numbers);
@@ -29,8 +30,10 @@ public:
 
     this->width  = a[0];
     this->height = a[1]+1;
-    this->enter  = a[2];
-    this->exit   = a[3];
+    this->enterd = a[2];
+    this->enterp = a[3];
+    this->exitd  = a[4];
+    this->exitp  = a[5];
   
     this->back.create(this->width,this->height,16,&MATERIALS["EMPTY"]);
     this->fore.create(this->width,this->height,16,&MATERIALS["EMPTY"]);
@@ -67,6 +70,46 @@ public:
     this->back.draw(origin_x, origin_y, scale_factor);
     this->fore.draw(origin_x, origin_y, scale_factor);
     this->rubble.draw(origin_x, origin_y, scale_factor);
+    
+    // I was in a hurry so this code is not very consise
+    
+    if (enterp != -1) {
+      if (enterd == 0)
+	MATERIALS["DOOR"].draw(origin_x + enterp * TILE_SIZE * scale_factor,
+				 origin_y,
+				 this->scale_factor);
+      else if (enterd == 1)
+	MATERIALS["GROUND"].draw(origin_x - TILE_SIZE * scale_factor,
+				 origin_y + (enterp + 1) * TILE_SIZE * scale_factor,
+				 this->scale_factor);
+      else if (enterd == 2)
+	MATERIALS["GROUND"].draw(origin_x + enterp * TILE_SIZE * scale_factor,
+				 origin_y + this->height * TILE_SIZE * scale_factor,
+				 scale_factor);
+      else if (enterd == 3)
+	MATERIALS["GROUND"].draw(origin_x + this->width * TILE_SIZE * scale_factor,
+				 origin_y + (enterp + 1) * TILE_SIZE * scale_factor,
+				 this->scale_factor);
+    }
+
+    if (exitp != -1) {
+      if (exitd == 0)
+	MATERIALS["DOOR"].draw(origin_x + exitp * TILE_SIZE * scale_factor,
+				 origin_y,
+				 this->scale_factor);
+      else if (exitd == 1)
+	MATERIALS["GROUND"].draw(origin_x - TILE_SIZE * scale_factor,
+				 origin_y + (exitp + 1) * TILE_SIZE * scale_factor,
+				 this->scale_factor);
+      else if (exitd == 2)
+	MATERIALS["GROUND"].draw(origin_x + exitp * TILE_SIZE * scale_factor,
+				 origin_y + this->height * TILE_SIZE * scale_factor,
+				 scale_factor);
+      else if (exitd == 3)
+	MATERIALS["GROUND"].draw(origin_x + this->width * TILE_SIZE * scale_factor,
+				 origin_y + (exitp + 1) * TILE_SIZE * scale_factor,
+				 this->scale_factor);
+    }
   }
 };
 #endif

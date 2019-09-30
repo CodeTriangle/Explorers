@@ -4,7 +4,7 @@
 const int DISPLAY_WIDTH  = 512;
 const int DISPLAY_HEIGHT = 384;
 
-const int TILE_SIZE = 64;
+const int TILE_SIZE = 16;
 
 const int FPS = 60;
 
