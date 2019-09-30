@@ -17,8 +17,6 @@ int main(int argc, char **argv) {
   
   bool loop = true, redraw = true;
 
-  bool future = false, travel = false;
-
   al_init();
   al_init_image_addon();
   al_install_keyboard();

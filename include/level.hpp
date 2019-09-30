@@ -16,6 +16,7 @@ public:
   int scale_factor;
   int origin_x, origin_y;
   tilemap back, fore, rubble;
+  bool future, travel;
   
   level(std::string fn) {
     std::ifstream ls(fn);
@@ -34,6 +35,8 @@ public:
     this->enterp = a[3];
     this->exitd  = a[4];
     this->exitp  = a[5];
+    this->future = false;
+    this->travel = false;
   
     this->back.create(this->width,this->height,16,&MATERIALS["EMPTY"]);
     this->fore.create(this->width,this->height,16,&MATERIALS["EMPTY"]);
@@ -79,8 +82,9 @@ public:
 
   void draw() {
     this->back.draw(origin_x, origin_y, scale_factor);
+    if (future)
+      this->rubble.draw(origin_x, origin_y, scale_factor);
     this->fore.draw(origin_x, origin_y, scale_factor);
-    this->rubble.draw(origin_x, origin_y, scale_factor);
     
     // I was in a hurry so this code is not very consise
     
