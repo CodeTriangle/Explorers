@@ -58,6 +58,17 @@ public:
         }
       }
     }
+
+    if (enterp == -1)
+      this->fore.add(&MATERIALS["PLAYER"], 2, 2);
+    else if (enterd == 0)
+      this->fore.add(&MATERIALS["PLAYER"], 1, enterp);
+    else if (enterd == 1)
+      this->fore.add(&MATERIALS["PLAYER"], enterp, this->width);
+    else if (enterd == 2)
+      this->fore.add(&MATERIALS["PLAYER"], this->height, enterp);
+    else if (enterd == 3)
+      this->fore.add(&MATERIALS["PLAYER"], enterp, 0);
   }
 
   void justify(int dw, int dh) {
@@ -79,7 +90,7 @@ public:
 				 origin_y,
 				 this->scale_factor);
       else if (enterd == 1)
-	MATERIALS["GROUND"].draw(origin_x - TILE_SIZE * scale_factor,
+	MATERIALS["GROUND"].draw(origin_x + this->width * TILE_SIZE * scale_factor,
 				 origin_y + (enterp + 1) * TILE_SIZE * scale_factor,
 				 this->scale_factor);
       else if (enterd == 2)
@@ -87,7 +98,7 @@ public:
 				 origin_y + this->height * TILE_SIZE * scale_factor,
 				 scale_factor);
       else if (enterd == 3)
-	MATERIALS["GROUND"].draw(origin_x + this->width * TILE_SIZE * scale_factor,
+	MATERIALS["GROUND"].draw(origin_x - TILE_SIZE * scale_factor,
 				 origin_y + (enterp + 1) * TILE_SIZE * scale_factor,
 				 this->scale_factor);
     }
@@ -98,7 +109,7 @@ public:
 				 origin_y,
 				 this->scale_factor);
       else if (exitd == 1)
-	MATERIALS["GROUND"].draw(origin_x - TILE_SIZE * scale_factor,
+	MATERIALS["GROUND"].draw(origin_x + this->width * TILE_SIZE * scale_factor,
 				 origin_y + (exitp + 1) * TILE_SIZE * scale_factor,
 				 this->scale_factor);
       else if (exitd == 2)
@@ -106,7 +117,7 @@ public:
 				 origin_y + this->height * TILE_SIZE * scale_factor,
 				 scale_factor);
       else if (exitd == 3)
-	MATERIALS["GROUND"].draw(origin_x + this->width * TILE_SIZE * scale_factor,
+	MATERIALS["GROUND"].draw(origin_x - TILE_SIZE * scale_factor,
 				 origin_y + (exitp + 1) * TILE_SIZE * scale_factor,
 				 this->scale_factor);
     }

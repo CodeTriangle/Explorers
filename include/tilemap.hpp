@@ -80,6 +80,10 @@ public:
     this->tiles[r][c] = t;
   }
 
+  void remove(int r, int c) {
+    this->tiles[r][c] = this->empty;
+  }
+
   void draw(float ox, float oy, float scale_factor) {
   for (int row = 0; row < this->tiles.size(); row++)
     for (int column = 0; column < this->tiles[row].size(); column++)
