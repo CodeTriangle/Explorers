@@ -1,6 +1,7 @@
-#include <algorithm>
+#include <algorithm> 
 
 #include <allegro5/allegro.h>
+#include <allegro5/allegro_image.h>
 
 #include "../include/tilemap.hpp"
 #include "../include/constants.hpp"
@@ -19,6 +20,7 @@ int main(int argc, char **argv) {
   bool future = false, travel = false;
 
   al_init();
+  al_init_image_addon();
   al_install_keyboard();
 
   display = al_create_display(DISPLAY_WIDTH, DISPLAY_HEIGHT);
@@ -31,12 +33,12 @@ int main(int argc, char **argv) {
 
   init_materials();
   
-  level l("assets/5.lv");
+  level l("assets/3.lv"); 
 
   l.justify(al_get_display_width(display), al_get_display_height(display));
 
-  al_set_target_bitmap(al_get_backbuffer(display)); 
-  al_start_timer(frame_timer);
+  al_set_target_bitmap(al_get_backbuffer(display));
+  al_start_timer(frame_timer); 
 
   while (loop) {
     ALLEGRO_EVENT e;
@@ -66,4 +68,4 @@ int main(int argc, char **argv) {
   al_destroy_display(display);
   al_destroy_event_queue(event_queue);
   al_destroy_timer(frame_timer);
-};
+}

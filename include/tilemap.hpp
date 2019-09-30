@@ -22,14 +22,15 @@ public:
     this->tx = tx;
     this->ty = ty;
   }
-};
 
-tile create_colored_tile(int w, int h, unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
-  tile t(al_create_bitmap(w, h), 0, 0);
-  al_set_target_bitmap(t.bitmap);
-  al_clear_to_color(al_map_rgba(r, g, b, a));
-  return t;
-}
+  tile(int w, int h, unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
+    this->bitmap = al_create_bitmap(w, h);
+    this->tx = 0;
+    this->ty = 0;
+    al_set_target_bitmap(this->bitmap);
+    al_clear_to_color(al_map_rgba(r, g, b, a));
+  }
+};
 
 class tilemap {
 public:

@@ -5,7 +5,11 @@ BUILDDIR := build
 INCDIR := include
 TARGET := bin/game
 
-LIB := -lallegro
+LIB := -lallegro -lallegro_image
 
 $(TARGET): $(SRCDIR)/main.cpp
-	$(CC) $^ -I $(INCDIR) -o $@ $(LIB) $(extra)
+	mkdir -p $(BUILDDIR)
+	$(CC) $^ -I $(INCDIR) -o $@ $(LIB) -g $(extra)
+
+clean:
+	rm -r $(TARGET)

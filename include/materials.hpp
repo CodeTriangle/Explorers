@@ -8,11 +8,13 @@
 #include <cstdlib>
 
 #include <allegro5/allegro.h>
+#include <allegro5/allegro_image.h>
 
 #include "tilemap.hpp"
 
 std::map<std::string, tile> MATERIALS;
 std::map<char, std::array<tile*, 3>> CHARS;
+std::map<std::string, ALLEGRO_BITMAP*> IMAGES;
 
 void init_materials() {
   std::ifstream ms("assets/materials");
@@ -31,12 +33,35 @@ void init_materials() {
 	a[i] = (unsigned char) atoi(c);
       }
 
-      tile t = create_colored_tile(16, 16, a[0], a[1], a[2], a[3]);
+      tile t(16, 16, a[0], a[1], a[2], a[3]);
       
-      MATERIALS.insert(std::pair<std::string, tile>(std::string(name), t));
-      
-      ms.get();
+      MATERIALS.insert(std::make_pair(std::string(name), t));
     }
+
+    if(std::string(func) == "br") {
+      std::string rn;
+      unsigned char a[2];
+
+      for (int i = 0; i < 3; i++) {
+	char c[20];
+	ms.getline(c, 20, ',');
+	if (i == 0)
+	  rn = std::string(c);
+	else
+	  a[i-1] = (unsigned char) atoi(c);
+      }
+
+      rn = "assets/" + rn;
+
+      if (IMAGES.find(rn) == IMAGES.end())
+	IMAGES.insert(std::make_pair(std::string(rn), al_load_bitmap(rn.c_str())));
+
+      tile t(IMAGES[rn], a[0], a[1]);
+
+      MATERIALS.insert(std::make_pair(std::string(name), t));
+    }
+
+    ms.get();
   }
   ms.close();
   
