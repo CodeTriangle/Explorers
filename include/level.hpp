@@ -15,6 +15,7 @@ public:
   int enterp, exitp;
   int scale_factor;
   int origin_x, origin_y;
+  int player_r, player_c;
   tilemap back, fore, rubble;
   bool future, travel;
   
@@ -62,22 +63,62 @@ public:
       }
     }
 
-    if (enterp == -1)
-      this->fore.add(&MATERIALS["PLAYER"], 2, 2);
-    else if (enterd == 0)
-      this->fore.add(&MATERIALS["PLAYER"], 1, enterp);
-    else if (enterd == 1)
-      this->fore.add(&MATERIALS["PLAYER"], enterp, this->width);
-    else if (enterd == 2)
-      this->fore.add(&MATERIALS["PLAYER"], this->height, enterp);
-    else if (enterd == 3)
-      this->fore.add(&MATERIALS["PLAYER"], enterp, 0);
+    if (enterp == -1) {
+      this->player_r = 2;
+      this->player_c = 2;
+    }
+    else if (enterd == 0) {
+      this->player_r = 1;
+      this->player_c = enterp;
+    }
+    else if (enterd == 1) {
+      this->player_r = enterp;
+      this->player_c = this->width;
+    }
+    else if (enterd == 2) {
+      this->player_r = this->height;
+      this->player_c = enterp;
+    }
+    else if (enterd == 3)  {
+      this->player_r = enterp;
+      this->player_c = 0;
+    }
+
+    this->fore.add(&MATERIALS["PLAYER"], player_r, player_c);
   }
 
   void justify(int dw, int dh) {
     scale_factor = std::min(dw / (8 * 16), dh / (6 * 16));
     origin_x = dw / 2 - this->width * 16 * scale_factor / 2;
     origin_y = dh / 2 - this->height * 16 * scale_factor / 2; 
+  }
+
+  void move_tile(int r, int c, int d) {
+  }
+
+  void move_player(int d) {
+    int target_r = player_r, target_c = player_c;
+    bool can_move = false;
+    if (d == 0 && player_r != 0)
+      target_r--;
+    else if (d == 1 && player_c != this->width - 1)
+      target_c++;
+    else if (d == 2 && player_r != this->height - 1)
+      target_r++;
+    else if (d == 3 && player_c != 0)
+      target_c--;
+
+    if (fore.contents(target_r, target_c) == &MATERIALS["EMPTY"] &&
+	back.contents(target_r, target_c) == &MATERIALS["GROUND"]) {
+      can_move = true;
+    }
+
+    if (can_move) {
+      fore.remove(player_r, player_c);
+      player_r = target_r;
+      player_c = target_c;
+      fore.add(&MATERIALS["PLAYER"], player_r, player_c);
+    }
   }
 
   void draw() {

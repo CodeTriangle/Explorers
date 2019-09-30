@@ -76,6 +76,10 @@ public:
     }
   }
 
+  tile *contents(int r, int c) {
+    return tiles[r][c];
+  }
+
   void add(tile *t, int r, int c) {
     this->tiles[r][c] = t;
   }

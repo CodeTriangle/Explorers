@@ -17,6 +17,10 @@ int main(int argc, char **argv) {
   
   bool loop = true, redraw = true;
 
+  bool held = false;
+
+  int direction = -1;
+
   al_init();
   al_init_image_addon();
   al_install_keyboard();
@@ -28,6 +32,7 @@ int main(int argc, char **argv) {
   event_queue = al_create_event_queue();
   al_register_event_source(event_queue, al_get_display_event_source(display));
   al_register_event_source(event_queue, al_get_timer_event_source(frame_timer));
+  al_register_event_source(event_queue, al_get_keyboard_event_source());
 
   init_materials();
   
@@ -44,8 +49,35 @@ int main(int argc, char **argv) {
 
     if (e.type == ALLEGRO_EVENT_TIMER) {
       redraw = true;
+
+      if (held) {
+	l.move_player(direction);
+	held = false;
+      }
     }
     else if (e.type == ALLEGRO_EVENT_KEY_DOWN) {
+      if (!held) {
+	held = true;
+
+	switch (e.keyboard.keycode) {
+	case ALLEGRO_KEY_UP:
+	case ALLEGRO_KEY_W:
+	  direction = 0;
+	  break;
+	case ALLEGRO_KEY_RIGHT:
+	case ALLEGRO_KEY_D:
+	  direction = 1;
+	  break;
+	case ALLEGRO_KEY_DOWN:
+	case ALLEGRO_KEY_S:
+	  direction = 2;
+	  break;
+	case ALLEGRO_KEY_LEFT:
+	case ALLEGRO_KEY_A:
+	  direction = 3;
+	  break;
+	}
+      }
     }
     else if (e.type == ALLEGRO_EVENT_DISPLAY_RESIZE) {
       l.justify(e.display.width, e.display.height);
