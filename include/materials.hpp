@@ -37,8 +37,7 @@ void init_materials() {
       
       MATERIALS.insert(std::make_pair(std::string(name), t));
     }
-
-    if(std::string(func) == "br") {
+    else if(std::string(func) == "br") {
       std::string rn;
       unsigned char a[2];
 
@@ -60,10 +59,30 @@ void init_materials() {
 
       MATERIALS.insert(std::make_pair(std::string(name), t));
     }
+    else if(std::string(func) == "ss") {
+      std::string rn;
+      char c[10];
+      
+      ms.getline(c, 10, ',');
+      rn = std::string(c);
+      rn = "assets/" + rn;
 
+      if (IMAGES.find(rn) == IMAGES.end())
+	IMAGES.insert(std::make_pair(std::string(rn), al_load_bitmap(rn.c_str())));
+
+      for (int i = 0; i < 5; i++) {
+	char d[11];
+	sprintf(d, "%s%d", name, i);
+
+	tile t(IMAGES[rn], i%2 == 1 ? 1 : 0, i<2 ? 0 : 1, 16);
+	MATERIALS.insert(std::make_pair(std::string(d), t));
+      }
+    }
     ms.get();
   }
   ms.close();
+
+  IMAGES.insert(std::make_pair("assets/texts.png", al_load_bitmap("assets/texts.png")));
   
   ms.open("assets/chars");
 
@@ -91,9 +110,46 @@ void init_materials() {
 bool is_collidable(tile* t) {
   if (t == &MATERIALS["WALL"] ||
       t == &MATERIALS["RUBBLE"] ||
+      t == &MATERIALS["RUB2"] ||
+      t == &MATERIALS["RUB3"] ||
       t == &MATERIALS["SWITCH"])
     return true;
   return false;
+}
+
+bool is_player(tile *t) {
+  if (t == &MATERIALS["PLAYER0"] ||
+      t == &MATERIALS["PLAYER1"] ||
+      t == &MATERIALS["PLAYER2"] ||
+      t == &MATERIALS["PLAYER3"] ||
+      t == &MATERIALS["FPLAY0"] ||
+      t == &MATERIALS["FPLAY1"] ||
+      t == &MATERIALS["FPLAY2"] ||
+      t == &MATERIALS["FPLAY3"])
+    return true;
+  return false;
+}
+
+bool is_rubble(tile *t) {
+  if (t == &MATERIALS["RUBBLE"] ||
+      t == &MATERIALS["RUB2"] ||
+      t == &MATERIALS["RUB3"])
+    return true;
+  return false;
+}
+    
+
+tile* player(int d, bool f) {
+  char c[8];
+  if (f)
+    sprintf(c, "FPLAY%d", d);
+  else
+    sprintf(c, "PLAYER%d", d);
+  return &MATERIALS[c];
+}
+
+int flip(int d) {
+  return (d + 2) % 4;
 }
 
 #endif

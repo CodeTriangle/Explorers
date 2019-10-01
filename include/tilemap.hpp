@@ -13,7 +13,7 @@ class tile {
 public:
   ALLEGRO_BITMAP *bitmap;
   float tx, ty;
-  int size;
+  int width, height;
   
   tile() {
   }
@@ -22,23 +22,33 @@ public:
     bitmap = bm;
     tx = x;
     ty = y;
-    size = size;
+    width = size;
+    height = size;
+  }
+
+  tile(ALLEGRO_BITMAP *bm, float x, float y, int w, int h) {
+    bitmap = bm;
+    tx = x;
+    ty = y;
+    width = w;
+    height = h;
   }
 
   tile(int s, unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
     bitmap = al_create_bitmap(s, s);
     tx = 0;
     ty = 0;
-    size = s;
+    width = s;
+    height = s;
     al_set_target_bitmap(bitmap);
     al_clear_to_color(al_map_rgba(r, g, b, a));
   }
 
   void draw(int x, int y, int scale_factor) {
     complex_draw_bitmap(bitmap,
-			size * tx, // sx
-			size * ty, // sy
-			size, size, // sw, sh
+			width * tx, // sx
+			height * ty, // sy
+			width, height, // sw, sh
 			al_map_rgb(255,255,255), // tint
 			0.0, 0.0, // cx, cy
 			x, y, //dx, dy
@@ -86,6 +96,17 @@ public:
 
   void remove(int r, int c) {
     tiles[r][c] = empty;
+  }
+
+  void clear() {
+    tiles.clear();
+  }
+
+  void replace(tile *from, tile *to) {
+    for (int i = 0; i < tiles.size(); i++)
+      for (int j = 0; j < tiles[i].size(); j++)
+	if (tiles[i][j] == from)
+	  tiles[i][j] = to;
   }
 
   void draw(float ox, float oy, float scale_factor) {

@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
   
   bool loop = true, redraw = true;
 
-  bool held = false, check_done = false;
+  bool held = false, should_move = false;
 
   int current_level = 0;
 
@@ -54,14 +54,13 @@ int main(int argc, char **argv) {
     if (e.type == ALLEGRO_EVENT_TIMER) {
       redraw = true;
       
-      if (held) {
-	check_done = l.move_player(direction);
-	held = false;
+      if (held && direction >= 0) {
+	l.move_player(direction);
+	direction = -1;
       }
     }
     else if (e.type == ALLEGRO_EVENT_KEY_DOWN) {
       if (!held) {
-	held = true;
 
 	switch (e.keyboard.keycode) {
 	case ALLEGRO_KEY_UP:
@@ -80,8 +79,18 @@ int main(int argc, char **argv) {
 	case ALLEGRO_KEY_A:
 	  direction = 3;
 	  break;
+	case ALLEGRO_KEY_R:
+	  l.reload();
+	}
+
+	if (direction >= 0) {
+	  held = true;
 	}
       }
+    }
+    else if (e.type == ALLEGRO_EVENT_KEY_UP)  {
+      if (held)
+	held = false;
     }
     else if (e.type == ALLEGRO_EVENT_DISPLAY_RESIZE) {
       l.justify(e.display.width, e.display.height);
@@ -102,4 +111,5 @@ int main(int argc, char **argv) {
   al_destroy_display(display);
   al_destroy_event_queue(event_queue);
   al_destroy_timer(frame_timer);
+  l.clear();
 }
