@@ -22,13 +22,10 @@ public:
   int player_r, player_c;
   int buttons, buttons_down;
   tilemap back, fore, rubble;
-  tile present_text, future_text;
   bool future, travel;
   bool done;
   
   level(std::string fn) {
-    present_text = tile(IMAGES["assets/texts.png"], 0, 1, 80, 8);
-    future_text = tile(IMAGES["assets/texts.png"], 0, 0, 80, 8);
     id = 1;
     load(fn);
   }
@@ -189,7 +186,10 @@ public:
 	   (d%2 == 1 && r == exitp + 1))) {
 	if (future) {
 	  id++;
-	  reload();
+	  if (id < 6)
+	    reload();
+	  else
+	    clear();
 	}
 	else {
 	  travel = true;
@@ -289,53 +289,62 @@ public:
   }
 
   void draw() {
-    back.draw(origin_x, origin_y, scale_factor);
-    if (future)
-      rubble.draw(origin_x, origin_y, scale_factor);
-    fore.draw(origin_x, origin_y, scale_factor);
+    if (id < 6) {
+      back.draw(origin_x, origin_y, scale_factor);
+      if (future)
+	rubble.draw(origin_x, origin_y, scale_factor);
+      fore.draw(origin_x, origin_y, scale_factor);
 
-    if (future) future_text.draw(origin_x, origin_y - 16, scale_factor / 2);
-    else present_text.draw(origin_x, origin_y - 16, scale_factor / 2);
+      if (future) TEXTS[0].draw(origin_x, origin_y - 32, 2);
+      else TEXTS[1].draw(origin_x, origin_y - 32, 2);
+
+      if (id == 1)
+	TEXTS[2].draw(origin_x, origin_y - 16, 2);
+      else
+	TEXTS[3].draw(origin_x, origin_y - 16, 2);
     
-    // I was in a hurry so this code is not very consise
+      // I was in a hurry so this code is not very consise
     
-    if (enterp != -1) {
-      if (enterd == 0)
-	MATERIALS["DOOR"].draw(origin_x + enterp * TILE_SIZE * scale_factor,
+      if (enterp != -1) {
+	if (enterd == 0)
+	  MATERIALS["DOOR"].draw(origin_x + enterp * TILE_SIZE * scale_factor,
 				 origin_y,
 				 scale_factor);
-      else if (enterd == 1)
-	MATERIALS["GROUND"].draw(origin_x + width * TILE_SIZE * scale_factor,
-				 origin_y + (enterp + 1) * TILE_SIZE * scale_factor,
-				 scale_factor);
-      else if (enterd == 2)
-	MATERIALS["GROUND"].draw(origin_x + enterp * TILE_SIZE * scale_factor,
-				 origin_y + height * TILE_SIZE * scale_factor,
-				 scale_factor);
-      else if (enterd == 3)
-	MATERIALS["GROUND"].draw(origin_x - TILE_SIZE * scale_factor,
-				 origin_y + (enterp + 1) * TILE_SIZE * scale_factor,
-				 scale_factor);
-    }
+	else if (enterd == 1)
+	  MATERIALS["GROUND"].draw(origin_x + width * TILE_SIZE * scale_factor,
+				   origin_y + (enterp + 1) * TILE_SIZE * scale_factor,
+				   scale_factor);
+	else if (enterd == 2)
+	  MATERIALS["GROUND"].draw(origin_x + enterp * TILE_SIZE * scale_factor,
+				   origin_y + height * TILE_SIZE * scale_factor,
+				   scale_factor);
+	else if (enterd == 3)
+	  MATERIALS["GROUND"].draw(origin_x - TILE_SIZE * scale_factor,
+				   origin_y + (enterp + 1) * TILE_SIZE * scale_factor,
+				   scale_factor);
+      }
 
-    if (exitp != -1) {
-      if (exitd == 0)
-	MATERIALS["DOOR"].draw(origin_x + exitp * TILE_SIZE * scale_factor,
+      if (exitp != -1) {
+	if (exitd == 0)
+	  MATERIALS["DOOR"].draw(origin_x + exitp * TILE_SIZE * scale_factor,
 				 origin_y,
 				 scale_factor);
-      else if (exitd == 1)
-	MATERIALS["GROUND"].draw(origin_x + width * TILE_SIZE * scale_factor,
-				 origin_y + (exitp + 1) * TILE_SIZE * scale_factor,
-				 scale_factor);
-      else if (exitd == 2)
-	MATERIALS["GROUND"].draw(origin_x + exitp * TILE_SIZE * scale_factor,
-				 origin_y + height * TILE_SIZE * scale_factor,
-				 scale_factor);
-      else if (exitd == 3)
-	MATERIALS["GROUND"].draw(origin_x - TILE_SIZE * scale_factor,
-				 origin_y + (exitp + 1) * TILE_SIZE * scale_factor,
-				 scale_factor);
+	else if (exitd == 1)
+	  MATERIALS["GROUND"].draw(origin_x + width * TILE_SIZE * scale_factor,
+				   origin_y + (exitp + 1) * TILE_SIZE * scale_factor,
+				   scale_factor);
+	else if (exitd == 2)
+	  MATERIALS["GROUND"].draw(origin_x + exitp * TILE_SIZE * scale_factor,
+				   origin_y + height * TILE_SIZE * scale_factor,
+				   scale_factor);
+	else if (exitd == 3)
+	  MATERIALS["GROUND"].draw(origin_x - TILE_SIZE * scale_factor,
+				   origin_y + (exitp + 1) * TILE_SIZE * scale_factor,
+				   scale_factor);
+      }
     }
+    else
+      TEXTS[4].draw(origin_x, origin_y, width * TILE_SIZE * scale_factor / 80);
   }
 };
 #endif

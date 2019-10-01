@@ -1,6 +1,7 @@
 #ifndef TILES_HPP
 #define TILES_HPP
 
+#include <vector>
 #include <fstream>
 #include <map>
 #include <array>
@@ -15,6 +16,7 @@
 std::map<std::string, tile> MATERIALS;
 std::map<char, std::array<tile*, 3>> CHARS;
 std::map<std::string, ALLEGRO_BITMAP*> IMAGES;
+std::vector<tile> TEXTS;
 
 void init_materials() {
   std::ifstream ms("assets/materials");
@@ -83,6 +85,11 @@ void init_materials() {
   ms.close();
 
   IMAGES.insert(std::make_pair("assets/texts.png", al_load_bitmap("assets/texts.png")));
+
+  for (int i = 0; i < 5; i++) {
+    tile t(IMAGES["assets/texts.png"], 0, i, 80, 8);
+    TEXTS.push_back(t);
+  }
   
   ms.open("assets/chars");
 
