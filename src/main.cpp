@@ -2,8 +2,7 @@
 #include <algorithm>
 #include <cstdio>
 
-#include <allegro5/allegro.h>
-#include <allegro5/allegro_image.h>
+#include <SDL.h>
 
 #include "../include/tilemap.hpp"
 #include "../include/constants.hpp"
@@ -11,9 +10,8 @@
 #include "../include/level.hpp"
 
 int main(int argc, char **argv) {
-  ALLEGRO_DISPLAY *display;
-  ALLEGRO_EVENT_QUEUE *event_queue;
-  ALLEGRO_TIMER *frame_timer;
+  SDL_Window *display;
+  SDL_Renderer *renderer;
 
   int scale_factor, origin_x, origin_y;
   
@@ -25,91 +23,78 @@ int main(int argc, char **argv) {
 
   int direction = -1;
 
-  al_init();
-  al_init_image_addon();
-  al_install_keyboard();
+  SDL_Init(SDL_INIT_VIDEO);
 
-  display = al_create_display(DISPLAY_WIDTH, DISPLAY_HEIGHT);
+  window = SDL_CreateWindow("Explorers",
+			     SDL_WINDOWPOS_UNDEFINED,
+			     SDL_WINDOWPOS_UNDEFINED,
+			     DISPLAY_WIDTH,
+			     DISPLAY_HEIGHT);
 
-  frame_timer = al_create_timer(1.0 / FPS);
+  renderer = SDL_CreateRenderer(window, -1, 0);
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 
-  event_queue = al_create_event_queue();
-  al_register_event_source(event_queue, al_get_display_event_source(display));
-  al_register_event_source(event_queue, al_get_timer_event_source(frame_timer));
-  al_register_event_source(event_queue, al_get_keyboard_event_source());
-
-  init_materials();
+  init_materials(renderer);
   
-  level l("assets/1.lv");
+  level l(renderer, "assets/1.lv");
 
-  l.justify(al_get_display_width(display), al_get_display_height(display));
-
-  al_set_target_bitmap(al_get_backbuffer(display));
-  al_start_timer(frame_timer); 
+  l.justify(DISPLAY_WIDTH, DISPLAY_HEIGHT);
 
   while (loop) {
-    ALLEGRO_EVENT e;
-    al_wait_for_event(event_queue, &e);
+    SDL_Event e;
 
-    if (e.type == ALLEGRO_EVENT_TIMER) {
-      redraw = true;
-      
-      if (held && direction >= 0) {
-	l.move_player(direction);
-	direction = -1;
-      }
-    }
-    else if (e.type == ALLEGRO_EVENT_KEY_DOWN) {
-      if (!held) {
+    while (SDL_PollEvent(&e)) {
+      if (e.type == SDL_KEYDOWN) {
+	if (!held) {
 
-	switch (e.keyboard.keycode) {
-	case ALLEGRO_KEY_UP:
-	case ALLEGRO_KEY_W:
-	  direction = 0;
-	  break;
-	case ALLEGRO_KEY_RIGHT:
-	case ALLEGRO_KEY_D:
-	  direction = 1;
-	  break;
-	case ALLEGRO_KEY_DOWN:
-	case ALLEGRO_KEY_S:
-	  direction = 2;
-	  break;
-	case ALLEGRO_KEY_LEFT:
-	case ALLEGRO_KEY_A:
-	  direction = 3;
-	  break;
-	case ALLEGRO_KEY_R:
-	  l.reload();
-	}
+	  switch (e.key.keysym.sym) {
+	  case SDLK_UP:
+	  case SDLK_w:
+	    direction = 0;
+	    break;
+	  case SDLK_RIGHT:
+	  case SDLK_d:
+	    direction = 1;
+	    break;
+	  case SDLK_DOWN:
+	  case SDLK_s:
+	    direction = 2;
+	    break;
+	  case SDLK_LEFT:
+	  case SDLK_a:
+	    direction = 3;
+	    break;
+	  case SDLK_r:
+	    l.reload();
+	  }
 
-	if (direction >= 0) {
-	  held = true;
+	  if (direction >= 0) {
+	    held = true;
+	  }
 	}
       }
-    }
-    else if (e.type == ALLEGRO_EVENT_KEY_UP)  {
-      if (held)
-	held = false;
-    }
-    else if (e.type == ALLEGRO_EVENT_DISPLAY_RESIZE) {
-      l.justify(e.display.width, e.display.height);
-    }
-    else if (e.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
-      loop = false;
+      else if (e.type == SDL_KEYUP)  {
+	if (held)
+	  held = false;
+      }
+      else if (e.type == SDL_WINDOWEVENT_RESIZED) {
+	l.justify(e.window.data1, e.window.data2);
+      }
+      else if (e.type == SDL_QUIT) {
+	loop = false;
+      }
     }
 
-    if (redraw && al_is_event_queue_empty(event_queue)) {
-      redraw = false;
-      al_clear_to_color(al_map_rgb(0,0,0));
-
-      l.draw();
-      
-      al_flip_display();
+    if (held && direction >= 0) {
+      l.move_player(direction);
+      direction = -1;
     }
+    
+    SDL_RenderClear(renderer);
+    l.draw();
+    SDL_RenderPresent(renderer);
   }
-  al_destroy_display(display);
-  al_destroy_event_queue(event_queue);
-  al_destroy_timer(frame_timer);
+  SDL_DestroyRenderer(renderer);
+  SDL_DestroyWindow(window);
   l.clear();
 }

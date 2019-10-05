@@ -5,7 +5,7 @@
 #include <fstream>
 #include <cstdlib>
 
-#include <allegro5/allegro.h>
+#include <SDL.h>
 
 #include "tilemap.hpp"
 #include "materials.hpp"
@@ -24,10 +24,12 @@ public:
   tilemap back, fore, rubble;
   bool future, travel;
   bool done;
+  SDL_Renderer renderer;
   
-  level(std::string fn) {
+  level(SDL_Renderer r, std::string fn) {
     id = 1;
     load(fn);
+    renderer = r;
   }
 
   void load(std::string fn) {
@@ -290,61 +292,69 @@ public:
 
   void draw() {
     if (id < 6) {
-      back.draw(origin_x, origin_y, scale_factor);
+      back.draw(renderer, origin_x, origin_y, scale_factor);
       if (future)
-	rubble.draw(origin_x, origin_y, scale_factor);
-      fore.draw(origin_x, origin_y, scale_factor);
+	rubble.draw(renderer, origin_x, origin_y, scale_factor);
+      fore.draw(renderer, origin_x, origin_y, scale_factor);
 
-      if (future) TEXTS[0].draw(origin_x, origin_y - 32, 2);
-      else TEXTS[1].draw(origin_x, origin_y - 32, 2);
+      if (future) TEXTS[0].draw(renderer, origin_x, origin_y - 32, 2);
+      else TEXTS[1].draw(renderer, origin_x, origin_y - 32, 2);
 
       if (id == 1)
-	TEXTS[2].draw(origin_x, origin_y - 16, 2);
+	TEXTS[2].draw(renderer, origin_x, origin_y - 16, 2);
       else
-	TEXTS[3].draw(origin_x, origin_y - 16, 2);
+	TEXTS[3].draw(renderer, origin_x, origin_y - 16, 2);
     
       // I was in a hurry so this code is not very consise
     
       if (enterp != -1) {
 	if (enterd == 0)
-	  MATERIALS["DOOR"].draw(origin_x + enterp * TILE_SIZE * scale_factor,
+	  MATERIALS["DOOR"].draw(renderer,
+				 origin_x + enterp * TILE_SIZE * scale_factor,
 				 origin_y,
 				 scale_factor);
 	else if (enterd == 1)
-	  MATERIALS["GROUND"].draw(origin_x + width * TILE_SIZE * scale_factor,
+	  MATERIALS["GROUND"].draw(renderer,
+				   origin_x + width * TILE_SIZE * scale_factor,
 				   origin_y + (enterp + 1) * TILE_SIZE * scale_factor,
 				   scale_factor);
 	else if (enterd == 2)
-	  MATERIALS["GROUND"].draw(origin_x + enterp * TILE_SIZE * scale_factor,
+	  MATERIALS["GROUND"].draw(renderer,
+				   origin_x + enterp * TILE_SIZE * scale_factor,
 				   origin_y + height * TILE_SIZE * scale_factor,
 				   scale_factor);
 	else if (enterd == 3)
-	  MATERIALS["GROUND"].draw(origin_x - TILE_SIZE * scale_factor,
+	  MATERIALS["GROUND"].draw(renderer,
+				   origin_x - TILE_SIZE * scale_factor,
 				   origin_y + (enterp + 1) * TILE_SIZE * scale_factor,
 				   scale_factor);
       }
 
       if (exitp != -1) {
 	if (exitd == 0)
-	  MATERIALS["DOOR"].draw(origin_x + exitp * TILE_SIZE * scale_factor,
+	  MATERIALS["DOOR"].draw(renderer,
+				 origin_x + exitp * TILE_SIZE * scale_factor,
 				 origin_y,
 				 scale_factor);
 	else if (exitd == 1)
-	  MATERIALS["GROUND"].draw(origin_x + width * TILE_SIZE * scale_factor,
+	  MATERIALS["GROUND"].draw(renderer,
+				   origin_x + width * TILE_SIZE * scale_factor,
 				   origin_y + (exitp + 1) * TILE_SIZE * scale_factor,
 				   scale_factor);
 	else if (exitd == 2)
-	  MATERIALS["GROUND"].draw(origin_x + exitp * TILE_SIZE * scale_factor,
+	  MATERIALS["GROUND"].draw(renderer,
+				   origin_x + exitp * TILE_SIZE * scale_factor,
 				   origin_y + height * TILE_SIZE * scale_factor,
 				   scale_factor);
 	else if (exitd == 3)
-	  MATERIALS["GROUND"].draw(origin_x - TILE_SIZE * scale_factor,
+	  MATERIALS["GROUND"].draw(renderer,
+				   origin_x - TILE_SIZE * scale_factor,
 				   origin_y + (exitp + 1) * TILE_SIZE * scale_factor,
 				   scale_factor);
       }
     }
     else
-      TEXTS[4].draw(origin_x, origin_y, width * TILE_SIZE * scale_factor / 80);
+      TEXTS[4].draw(renderer, origin_x, origin_y, width * TILE_SIZE * scale_factor / 80);
   }
 };
 #endif

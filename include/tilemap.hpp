@@ -3,57 +3,47 @@
 
 #include <vector>
 
-#include <allegro5/allegro.h>
+#include <SDL.h>
 
 #include "constants.hpp"
 
-#define complex_draw_bitmap al_draw_tinted_scaled_rotated_bitmap_region
-
 class tile {
 public:
-  ALLEGRO_BITMAP *bitmap;
-  float tx, ty;
-  int width, height;
+  SDL_Texture *texture;
+  SDL_Rect rect;
   
   tile() {
   }
 
-  tile(ALLEGRO_BITMAP *bm, float x, float y, int size) {
-    bitmap = bm;
-    tx = x;
-    ty = y;
-    width = size;
-    height = size;
+  tile(SDL_Texture *tex, float x1, float y1, int size) {
+    texture = tex;
+    rect = { .x = x1, .y = y1, .w = size, .h = size };
   }
 
-  tile(ALLEGRO_BITMAP *bm, float x, float y, int w, int h) {
-    bitmap = bm;
-    tx = x;
-    ty = y;
-    width = w;
-    height = h;
+  tile(SDL_Texture *tex, float x1, float y1, int w1, int h1) {
+    texture = tex;
+    rect = { .x = x1, .y = y1, .w = w1, .h = h1 };
   }
 
-  tile(int s, unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
-    bitmap = al_create_bitmap(s, s);
-    tx = 0;
-    ty = 0;
-    width = s;
-    height = s;
-    al_set_target_bitmap(bitmap);
-    al_clear_to_color(al_map_rgba(r, g, b, a));
+  tile(SDL_Renderer *renderer,
+       unsigned char r, unsigned char g, unsigned char b, unsigned char a,
+       int w, int h) {
+    texture = SDL_CreateTexture(renderer,
+				SDL_PIXELFORMAT_RGBA8888,
+				SDL_TEXTUREACCESS_TARGET,
+				w, h);
+    rect = { .x = 0, .y = 0, .w = w1, .h = h1 };
+    
+    SDL_SetRenderTarget(renderer, texture);
+    SDL_SetRenderDrawColor(renderer, r, g, b, a);
+    SDL_RenderClear(renderer);
+    SDL_RenderFillRect(renderer, &rect);
   }
 
-  void draw(int x, int y, int scale_factor) {
-    complex_draw_bitmap(bitmap,
-			width * tx, // sx
-			height * ty, // sy
-			width, height, // sw, sh
-			al_map_rgb(255,255,255), // tint
-			0.0, 0.0, // cx, cy
-			x, y, //dx, dy
-			scale_factor, scale_factor, // xscale, yscale
-			0, 0); // angle, flags
+  void draw(SDL_Renderer *renderer, int x1, int y1, int scale_factor) {
+    SDL_RenderCopy(renderer, texture, &rect,
+		   {.x = x1, .y = y1,
+		    .w = width * scale_factor, h = height * scale_factor});
   }
 };
 
@@ -109,10 +99,11 @@ public:
 	  tiles[i][j] = to;
   }
 
-  void draw(float ox, float oy, float scale_factor) {
+  void draw(SDL_Renderer renderer, float ox, float oy, float scale_factor) {
   for (int row = 0; row < tiles.size(); row++)
     for (int column = 0; column < tiles[row].size(); column++)
-      tiles[row][column]->draw(ox + tile_size * column * scale_factor,
+      tiles[row][column]->draw(renderer,
+			       ox + tile_size * column * scale_factor,
 			       oy + tile_size * row * scale_factor,
 			       scale_factor);
   }

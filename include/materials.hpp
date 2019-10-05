@@ -11,14 +11,31 @@
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_image.h>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 #include "tilemap.hpp"
 
 std::map<std::string, tile> MATERIALS;
 std::map<char, std::array<tile*, 3>> CHARS;
-std::map<std::string, ALLEGRO_BITMAP*> IMAGES;
+std::map<std::string, SDL_Surface*> SURFACES;
+std::map<std::string, SDL_Texture*> TEXTURES;
 std::vector<tile> TEXTS;
 
-void init_materials() {
+void load_image(SDL_Renderer* renderer, std::string fn) {
+  if (SURFACES.find(rn) == SURFACES.end()) {
+    int x, y, n;
+    unsigned char* data = stbi_load(fn.c_str(), &x, &y, &n, STBI_rgb_alpha);
+
+    SDL_Surface* s = SDL_CreateRGBSurfaceWithFormatFrom((void*) data, x, y,
+							32, 4 * y, SDL_PIXELFORMAT_RGBA32);
+	
+    SURFACES.insert(std::make_pair(std::string(fn), s));
+    TEXTURES.insert(std::make_pair(std::string(fn), SDL_CreateTextureFromSurface(renderer, s)));
+  }  
+}
+
+void init_materials(SDL_Renderer* renderer) {
   std::ifstream ms("assets/materials");
 
   while (ms.good()) {
@@ -35,10 +52,11 @@ void init_materials() {
 	a[i] = (unsigned char) atoi(c);
       }
 
-      tile t(16, a[0], a[1], a[2], a[3]);
+      tile t(renderer, a[0], a[1], a[2], a[3], TILE_SIZE, TILE_SIZE);
       
       MATERIALS.insert(std::make_pair(std::string(name), t));
     }
+    
     else if(std::string(func) == "br") {
       std::string rn;
       unsigned char a[2];
@@ -54,13 +72,13 @@ void init_materials() {
 
       rn = "assets/" + rn;
 
-      if (IMAGES.find(rn) == IMAGES.end())
-	IMAGES.insert(std::make_pair(std::string(rn), al_load_bitmap(rn.c_str())));
+      load_image(renderer, rn);
 
-      tile t(IMAGES[rn], a[0], a[1], 16);
+      tile t(TEXTURES[rn], a[0], a[1], 16);
 
       MATERIALS.insert(std::make_pair(std::string(name), t));
     }
+    
     else if(std::string(func) == "ss") {
       std::string rn;
       char c[10];
@@ -69,8 +87,7 @@ void init_materials() {
       rn = std::string(c);
       rn = "assets/" + rn;
 
-      if (IMAGES.find(rn) == IMAGES.end())
-	IMAGES.insert(std::make_pair(std::string(rn), al_load_bitmap(rn.c_str())));
+      load_image(renderer, rn);      
 
       for (int i = 0; i < 5; i++) {
 	char d[11];
@@ -84,10 +101,10 @@ void init_materials() {
   }
   ms.close();
 
-  IMAGES.insert(std::make_pair("assets/texts.png", al_load_bitmap("assets/texts.png")));
+  load_image("assets/texts.png");
 
   for (int i = 0; i < 5; i++) {
-    tile t(IMAGES["assets/texts.png"], 0, i, 80, 8);
+    tile t(TEXTURES["assets/texts.png"], 0, i, 80, 8);
     TEXTS.push_back(t);
   }
   
