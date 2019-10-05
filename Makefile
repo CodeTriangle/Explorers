@@ -5,7 +5,7 @@ BUILDDIR := build
 INCDIR := include
 TARGET := bin/game
 
-LIB := -lallegro -lallegro_image
+LIB := $(shell sdl2-config --cflags --libs)
 
 $(TARGET): $(SRCDIR)/main.cpp
 	mkdir -p $(BUILDDIR)

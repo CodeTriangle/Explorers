@@ -22,10 +22,10 @@ std::map<std::string, SDL_Surface*> SURFACES;
 std::map<std::string, SDL_Texture*> TEXTURES;
 std::vector<tile> TEXTS;
 
-void load_image(SDL_Renderer* renderer, std::string fn) {
-  if (SURFACES.find(rn) == SURFACES.end()) {
+void load_image(SDL_Renderer* renderer, const char* fn) {
+  if (SURFACES.find(fn) == SURFACES.end()) {
     int x, y, n;
-    unsigned char* data = stbi_load(fn.c_str(), &x, &y, &n, STBI_rgb_alpha);
+    unsigned char* data = stbi_load(fn, &x, &y, &n, STBI_rgb_alpha);
 
     SDL_Surface* s = SDL_CreateRGBSurfaceWithFormatFrom((void*) data, x, y,
 							32, 4 * y, SDL_PIXELFORMAT_RGBA32);
@@ -72,7 +72,7 @@ void init_materials(SDL_Renderer* renderer) {
 
       rn = "assets/" + rn;
 
-      load_image(renderer, rn);
+      load_image(renderer, rn.c_str());
 
       tile t(TEXTURES[rn], a[0], a[1], 16);
 
@@ -87,13 +87,13 @@ void init_materials(SDL_Renderer* renderer) {
       rn = std::string(c);
       rn = "assets/" + rn;
 
-      load_image(renderer, rn);      
+      load_image(renderer, rn.c_str());
 
       for (int i = 0; i < 5; i++) {
 	char d[11];
 	sprintf(d, "%s%d", name, i);
 
-	tile t(IMAGES[rn], i%2 == 1 ? 1 : 0, i<2 ? 0 : 1, 16);
+	tile t(TEXTURES[rn], i%2 == 1 ? 1 : 0, i<2 ? 0 : 1, 16);
 	MATERIALS.insert(std::make_pair(std::string(d), t));
       }
     }
@@ -101,7 +101,7 @@ void init_materials(SDL_Renderer* renderer) {
   }
   ms.close();
 
-  load_image("assets/texts.png");
+  load_image(renderer, "assets/texts.png");
 
   for (int i = 0; i < 5; i++) {
     tile t(TEXTURES["assets/texts.png"], 0, i, 80, 8);

@@ -10,7 +10,7 @@
 #include "../include/level.hpp"
 
 int main(int argc, char **argv) {
-  SDL_Window *display;
+  SDL_Window *window;
   SDL_Renderer *renderer;
 
   int scale_factor, origin_x, origin_y;
@@ -26,10 +26,11 @@ int main(int argc, char **argv) {
   SDL_Init(SDL_INIT_VIDEO);
 
   window = SDL_CreateWindow("Explorers",
-			     SDL_WINDOWPOS_UNDEFINED,
-			     SDL_WINDOWPOS_UNDEFINED,
-			     DISPLAY_WIDTH,
-			     DISPLAY_HEIGHT);
+			    SDL_WINDOWPOS_UNDEFINED,
+			    SDL_WINDOWPOS_UNDEFINED,
+			    DISPLAY_WIDTH,
+			    DISPLAY_HEIGHT,
+			    0);
 
   renderer = SDL_CreateRenderer(window, -1, 0);
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);

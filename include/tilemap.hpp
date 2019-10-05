@@ -11,27 +11,29 @@ class tile {
 public:
   SDL_Texture *texture;
   SDL_Rect rect;
+  int width;
+  int height;
   
   tile() {
   }
 
-  tile(SDL_Texture *tex, float x1, float y1, int size) {
+  tile(SDL_Texture *tex, int x1, int y1, int size) {
     texture = tex;
     rect = { .x = x1, .y = y1, .w = size, .h = size };
   }
 
-  tile(SDL_Texture *tex, float x1, float y1, int w1, int h1) {
+  tile(SDL_Texture *tex, int x1, int y1, int w1, int h1) {
     texture = tex;
     rect = { .x = x1, .y = y1, .w = w1, .h = h1 };
   }
 
   tile(SDL_Renderer *renderer,
        unsigned char r, unsigned char g, unsigned char b, unsigned char a,
-       int w, int h) {
+       int w1, int h1) {
     texture = SDL_CreateTexture(renderer,
 				SDL_PIXELFORMAT_RGBA8888,
 				SDL_TEXTUREACCESS_TARGET,
-				w, h);
+				w1, h1);
     rect = { .x = 0, .y = 0, .w = w1, .h = h1 };
     
     SDL_SetRenderTarget(renderer, texture);
@@ -41,9 +43,10 @@ public:
   }
 
   void draw(SDL_Renderer *renderer, int x1, int y1, int scale_factor) {
-    SDL_RenderCopy(renderer, texture, &rect,
-		   {.x = x1, .y = y1,
-		    .w = width * scale_factor, h = height * scale_factor});
+    const SDL_Rect dstrect = {.x = x1, .y = y1,
+			      .w = width * scale_factor, .h = height * scale_factor };
+    
+    SDL_RenderCopy(renderer, texture, &rect, &dstrect);
   }
 };
 
@@ -99,7 +102,7 @@ public:
 	  tiles[i][j] = to;
   }
 
-  void draw(SDL_Renderer renderer, float ox, float oy, float scale_factor) {
+  void draw(SDL_Renderer *renderer, float ox, float oy, float scale_factor) {
   for (int row = 0; row < tiles.size(); row++)
     for (int column = 0; column < tiles[row].size(); column++)
       tiles[row][column]->draw(renderer,

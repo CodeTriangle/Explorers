@@ -24,10 +24,11 @@ public:
   tilemap back, fore, rubble;
   bool future, travel;
   bool done;
-  SDL_Renderer renderer;
+  SDL_Renderer *renderer;
   
-  level(SDL_Renderer r, std::string fn) {
+  level(SDL_Renderer *r, std::string fn) {
     id = 1;
+    renderer = r;
     load(fn);
     renderer = r;
   }
