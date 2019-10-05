@@ -11,20 +11,18 @@ class tile {
 public:
   SDL_Texture *texture;
   SDL_Rect rect;
-  int width;
-  int height;
   
   tile() {
   }
 
   tile(SDL_Texture *tex, int x1, int y1, int size) {
     texture = tex;
-    rect = { .x = x1, .y = y1, .w = size, .h = size };
+    rect = { .x = x1 * size, .y = y1 * size, .w = size, .h = size };
   }
 
   tile(SDL_Texture *tex, int x1, int y1, int w1, int h1) {
     texture = tex;
-    rect = { .x = x1, .y = y1, .w = w1, .h = h1 };
+    rect = { .x = x1 * w1, .y = y1 * h1, .w = w1, .h = h1 };
   }
 
   tile(SDL_Renderer *renderer,
@@ -44,7 +42,7 @@ public:
 
   void draw(SDL_Renderer *renderer, int x1, int y1, int scale_factor) {
     const SDL_Rect dstrect = {.x = x1, .y = y1,
-			      .w = width * scale_factor, .h = height * scale_factor };
+			      .w = rect.w * scale_factor, .h = rect.h * scale_factor };
     
     SDL_RenderCopy(renderer, texture, &rect, &dstrect);
   }

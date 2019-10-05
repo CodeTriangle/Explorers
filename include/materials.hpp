@@ -27,8 +27,14 @@ void load_image(SDL_Renderer* renderer, const char* fn) {
     int x, y, n;
     unsigned char* data = stbi_load(fn, &x, &y, &n, STBI_rgb_alpha);
 
+    if (data == NULL) {
+      SDL_Log("Loading image failed: %s\n", stbi_failure_reason());
+      exit(1);
+    }
+
     SDL_Surface* s = SDL_CreateRGBSurfaceWithFormatFrom((void*) data, x, y,
-							32, 4 * y, SDL_PIXELFORMAT_RGBA32);
+							32, 4 * x,
+							SDL_PIXELFORMAT_RGBA32);
 	
     SURFACES.insert(std::make_pair(std::string(fn), s));
     TEXTURES.insert(std::make_pair(std::string(fn), SDL_CreateTextureFromSurface(renderer, s)));

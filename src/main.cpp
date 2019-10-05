@@ -23,7 +23,10 @@ int main(int argc, char **argv) {
 
   int direction = -1;
 
-  SDL_Init(SDL_INIT_VIDEO);
+  if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+    SDL_Log("Unable to initialize SDL2: %s\n", SDL_GetError());
+    return 1;
+  }
 
   window = SDL_CreateWindow("Explorers",
 			    SDL_WINDOWPOS_UNDEFINED,
@@ -32,10 +35,25 @@ int main(int argc, char **argv) {
 			    DISPLAY_HEIGHT,
 			    0);
 
-  renderer = SDL_CreateRenderer(window, -1, 0);
+  if (window == NULL) {
+    SDL_Log("Could not create window: %s\n", SDL_GetError());
+    return 1;
+  }
+
+  renderer = SDL_CreateRenderer(window, -1,
+				SDL_RENDERER_ACCELERATED |
+				SDL_RENDERER_TARGETTEXTURE);
+
+  if (renderer == NULL) {
+    SDL_Log("Could not create renderer: %s\n", SDL_GetError());
+    return 1;
+  }
+  
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 
   init_materials(renderer);
+
+  SDL_SetRenderTarget(renderer, NULL);
   
   level l(renderer, "assets/1.lv");
 
