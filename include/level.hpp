@@ -41,14 +41,15 @@
 
 #include <SDL.h>
 
-#include "tilemap.hpp"
+#include "direction.hpp"
 #include "materials.hpp"
+#include "tilemap.hpp"
 
 class level {
 public:
   int id;
   int width, height;
-  int enterd, exitd;
+  direction enterd, exitd;
   int enterp, exitp;
   int scale_factor;
   int origin_x, origin_y;
@@ -80,9 +81,9 @@ public:
 
     width  = a[0];
     height = a[1]+1;
-    enterd = a[2];
+    enterd = (direction) a[2];
     enterp = a[3];
-    exitd  = a[4];
+    exitd  = (direction) a[4];
     exitp  = a[5];
     
     future = false;
@@ -186,58 +187,29 @@ public:
     }
   }
 
-  bool move_tile(int r, int c, int d) {
-    int target_r = r, target_c = c;
-    bool can_move = false, check_done = false;
-    if (d == 0) {
-      if (r == 1) {
-        check_done = true;
-	if (future && rubble.contents(r-1,c) == &MATERIALS["VINE"])
-	  target_r--;
-      }
-      else if (r != 0)
-	target_r--;
-    }
-    else if (d == 1) {
-      if (c == width - 1)
-	check_done = true;
-      else
-	target_c++;
-    }
-    else if (d == 2) {
-      if (r == height - 1)
-	check_done = true;
-      else
-	target_r++;
-    }
-    else if (d == 3) {
-      if (c == 0)
-	check_done = true;
-      else
-	target_c--;
-    }
+  bool move_tile(int r, int c, direction d) {
+    int target_r, target_c;
 
-    if (check_done) {
-      if (d == exitd &&
-	  ((d%2 == 0 && c == exitp) ||
-	   (d%2 == 1 && r == exitp + 1))) {
-	if (future) {
-	  id++;
-	  if (id < 6)
-	    reload();
-	  else
-	    clear();
-	}
-	else {
-	  travel = true;
-	  travel_to_future();
-	}
-	return false;
-      }
-    }
+    next_to(r, c, d, &target_r, &target_c);
 
-    if (target_r == r && target_c == c)
+    if ((target_r < 1 || target_r >= height ||
+	 target_c < 0 || target_c >= width) &&
+	(d == exitd &&
+	 ((is_vertical(d) && c == exitp) ||
+	  (is_horizontal(d) && r == exitp + 1)))) {
+      if (future) {
+	id++;
+	if (id < 6)
+	  reload();
+	else
+	  clear();
+      }
+      else {
+	travel = true;
+	travel_to_future();
+      }
       return false;
+    }
 
     tile* back_here = back.contents(r, c);
     tile* fore_here = fore.contents(r, c);
@@ -246,19 +218,12 @@ public:
     tile* fore_there = fore.contents(target_r, target_c);
     tile* rubble_there = rubble.contents(target_r, target_c);
 
-    if (is_collidable(fore_there) ||
-	is_collidable(back_there))
-      can_move = false;
-    else
-      can_move = true;
+    bool can_move = true;
 
-    if (future) {
+    if (is_collidable(fore_there) ||
+	is_collidable(back_there) ||
+	(future && is_collidable(rubble_there)))
       can_move = false;
-      if(is_collidable(rubble_there))
-	can_move = false;
-      else
-	can_move = true;
-    }
     
     if (fore_there == &MATERIALS["BLOCK"]) {
       can_move = false;
@@ -266,19 +231,17 @@ public:
 	can_move = true;
     }
 
-    if ((d == 0 && rubble.contents(r-1, c) == &MATERIALS["VINE"]) ||
-	(d == 1 && rubble.contents(r, c+1) == &MATERIALS["VINE"]) ||
-	(d == 3 && rubble.contents(r, c-1) == &MATERIALS["VINE"])) 
+    if (rubble_there == &MATERIALS["VINE"])
       can_move = true;
 
     if (can_move) {
       fore.remove(r, c);
-      bool should_add = false;
+      bool should_add = true;
       
-      if (back_there != &MATERIALS["PIT"] &&
-	  back_there != &MATERIALS["HOLE"] &&
-	  back_there != &MATERIALS["BRIDB"])
-	should_add = true;
+      if (back_there == &MATERIALS["PIT"] ||
+	  back_there == &MATERIALS["HOLE"] ||
+	  back_there == &MATERIALS["BRIDB"])
+	should_add = false;
 
       if (back_here == &MATERIALS["BUTTD"]) {
 	back.add(&MATERIALS["BUTTON"], r, c);
@@ -321,7 +284,7 @@ public:
       return false;
   }
 
-  bool move_player(int d) {
+  bool move_player(direction d) {
     return move_tile(player_r, player_c, d);
   }
 
