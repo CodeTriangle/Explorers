@@ -49,18 +49,11 @@ void init_materials(SDL_Renderer* renderer) {
     ms.getline(name, 7, ' ');
     ms.getline(func, 3, ':');
 
-    if (std::string(func) == "ct") {
-      unsigned char a[4];
+    if (std::string(func) == "nl") {
+      char c[2];
+      ms.getline(c, 3, ',');
       
-      for (int i = 0; i < 4; i++) {
-	char c[4];
-	ms.getline(c, 5, ',');
-	a[i] = (unsigned char) atoi(c);
-      }
-
-      tile t(renderer, a[0], a[1], a[2], a[3], TILE_SIZE, TILE_SIZE);
-      
-      MATERIALS.insert(std::make_pair(std::string(name), t));
+      MATERIALS.insert(std::make_pair(std::string(name), tile()));
     }
     
     else if(std::string(func) == "br") {

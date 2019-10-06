@@ -13,6 +13,7 @@ public:
   SDL_Rect rect;
   
   tile() {
+    texture = NULL;
   }
 
   tile(SDL_Texture *tex, int x1, int y1, int size) {
@@ -25,22 +26,10 @@ public:
     rect = { .x = x1 * w1, .y = y1 * h1, .w = w1, .h = h1 };
   }
 
-  tile(SDL_Renderer *renderer,
-       unsigned char r, unsigned char g, unsigned char b, unsigned char a,
-       int w1, int h1) {
-    texture = SDL_CreateTexture(renderer,
-				SDL_PIXELFORMAT_RGBA8888,
-				SDL_TEXTUREACCESS_TARGET,
-				w1, h1);
-    rect = { .x = 0, .y = 0, .w = w1, .h = h1 };
-    
-    SDL_SetRenderTarget(renderer, texture);
-    SDL_SetRenderDrawColor(renderer, r, g, b, a);
-    SDL_RenderClear(renderer);
-    SDL_RenderFillRect(renderer, &rect);
-  }
-
   void draw(SDL_Renderer *renderer, int x1, int y1, int scale_factor) {
+    if (texture == NULL)
+      return;
+    
     const SDL_Rect dstrect = {.x = x1, .y = y1,
 			      .w = rect.w * scale_factor, .h = rect.h * scale_factor };
     
