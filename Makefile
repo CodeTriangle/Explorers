@@ -20,4 +20,4 @@ bundle:
 	mkdir -p $(BUNDLEDIR)
 	cp $(TARGET) LICENSE -t $(BUNDLEDIR)
 	cp -r assets -t $(BUNDLEDIR)
-	tar -xzvf $(BUNDLEDIR)-$(VERSION).tar.gz $(BUNDLEDIR)
+	tar -czvf $(BUNDLEDIR)-$(VERSION).tar.gz $(BUNDLEDIR)
