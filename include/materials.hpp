@@ -42,9 +42,6 @@
 #include <string>
 #include <cstdlib>
 
-#include <allegro5/allegro.h>
-#include <allegro5/allegro_image.h>
-
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
