@@ -6,6 +6,10 @@ It's very rough around the edges because I decided I wanted to make my own engin
 
 # Building/running
 
-You will need allegro 5. Figure that part out yourself. It should be in most package managers.
+You will need SDL2. Figure that part out yourself. It should be in most package managers.
 
 To build, `make` should do the trick. The binary will be `bin/game`
+
+If you desire for some reason to make a compressed release, `make bundle` is your friend.
+
+Versions before 1.1.0 instead rely on Allegro 5.
