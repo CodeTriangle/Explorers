@@ -38,9 +38,10 @@
 
 #include <SDL.h>
 
-#include "../include/tilemap.hpp"
 #include "../include/constants.hpp"
+#include "../include/direction.hpp"
 #include "../include/materials.hpp"
+#include "../include/tilemap.hpp"
 #include "../include/level.hpp"
 
 int main(int argc, char **argv) {
@@ -55,7 +56,7 @@ int main(int argc, char **argv) {
 
   int current_level = 0;
 
-  int direction = -1;
+  direction dir = STATIC;
 
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
     SDL_Log("Unable to initialize SDL2: %s\n", SDL_GetError());
@@ -103,25 +104,25 @@ int main(int argc, char **argv) {
 	  switch (e.key.keysym.sym) {
 	  case SDLK_UP:
 	  case SDLK_w:
-	    direction = 0;
+	    dir = NORTH;
 	    break;
 	  case SDLK_RIGHT:
 	  case SDLK_d:
-	    direction = 1;
+	    dir = EAST;
 	    break;
 	  case SDLK_DOWN:
 	  case SDLK_s:
-	    direction = 2;
+	    dir = SOUTH;
 	    break;
 	  case SDLK_LEFT:
 	  case SDLK_a:
-	    direction = 3;
+	    dir = WEST;
 	    break;
 	  case SDLK_r:
 	    l.reload();
 	  }
 
-	  if (direction >= 0) {
+	  if (dir >= 0) {
 	    held = true;
 	  }
 	}
@@ -138,9 +139,9 @@ int main(int argc, char **argv) {
       }
     }
 
-    if (held && direction >= 0) {
-      l.move_player(direction);
-      direction = -1;
+    if (held && dir != STATIC) {
+      l.move_player(dir);
+      dir = STATIC;
     }
     
     SDL_RenderClear(renderer);
