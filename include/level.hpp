@@ -194,9 +194,9 @@ public:
 
     if ((target_r < 1 || target_r >= height ||
 	 target_c < 0 || target_c >= width) &&
-	(d == exitd &&
-	 ((is_vertical(d) && c == exitp) ||
-	  (is_horizontal(d) && r == exitp + 1)))) {
+	((is_vertical(d) && c == exitp) ||
+	 (is_horizontal(d) && r == exitp + 1)) &&
+	d == exitd) {
       if (future) {
 	id++;
 	if (id < 6)
@@ -210,6 +210,10 @@ public:
       }
       return false;
     }
+
+    if (target_r < 0 || target_r >= height ||
+	target_c < 0 || target_c >= width)
+      return false;
 
     tile* back_here = back.contents(r, c);
     tile* fore_here = fore.contents(r, c);
@@ -231,7 +235,9 @@ public:
 	can_move = true;
     }
 
-    if (rubble_there == &MATERIALS["VINE"])
+    if (rubble_there == &MATERIALS["VINE"] &&
+	0 <= target_c < width &&
+	future)
       can_move = true;
 
     if (can_move) {
