@@ -190,8 +190,7 @@ bool is_rubble(tile *t) {
       t == &MATERIALS["RUB3"])
     return true;
   return false;
-}
-    
+}    
 
 tile* player(int d, bool f) {
   char c[8];
@@ -200,10 +199,6 @@ tile* player(int d, bool f) {
   else
     sprintf(c, "PLAYER%d", d);
   return &MATERIALS[c];
-}
-
-int flip(int d) {
-  return (d + 2) % 4;
 }
 
 #endif
