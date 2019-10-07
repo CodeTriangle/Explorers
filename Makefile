@@ -7,7 +7,7 @@ TARGET := bin/game
 
 LIB := $(shell sdl2-config --cflags --libs)
 
-VERSION := 1.1.0
+VERSION := 1.1.1
 
 $(TARGET): $(SRCDIR)/main.cpp
 	mkdir -p bin
