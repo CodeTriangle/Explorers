@@ -53,13 +53,13 @@ bool is_horizontal(direction d) {
   return d % 2 == 1;
 }
 
-void next_to(int r, int c, direction d, int *tr, int *tc) {
+void coords_next_to(int r, int c, direction d, int *tr, int *tc) {
   if (d == STATIC)
     return;
   if (is_vertical(d))
-    *tr = r + (d == NORTH) ? -1 : 1;
+    *tr = r + ((d == NORTH) ? -1 : 1);
   else
-    *tc = c + (d == WEST) ? -1 : 1;
+    *tc = c + ((d == WEST) ? -1 : 1);
 }
 
 #endif

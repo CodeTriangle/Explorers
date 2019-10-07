@@ -188,9 +188,9 @@ public:
   }
 
   bool move_tile(int r, int c, direction d) {
-    int target_r, target_c;
+    int target_r = r, target_c = c;
 
-    next_to(r, c, d, &target_r, &target_c);
+    coords_next_to(r, c, d, &target_r, &target_c);
 
     if ((target_r < 1 || target_r >= height ||
 	 target_c < 0 || target_c >= width) &&

@@ -139,7 +139,7 @@ int main(int argc, char **argv) {
       }
     }
 
-    if (held && dir == STATIC) {
+    if (held && dir != STATIC) {
       l.move_player(dir);
       dir = STATIC;
     }
