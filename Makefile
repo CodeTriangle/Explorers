@@ -1,17 +1,19 @@
-CC := g++
+CC := em++
 
 SRCDIR := src
 BUNDLEDIR := Explorers
 INCDIR := include
-TARGET := bin/game
-
-LIB := $(shell sdl2-config --cflags --libs)
+ASSETDIR := assets
+TARGET := explorers/index.html
 
 VERSION := 1.1.1
 
 $(TARGET): $(SRCDIR)/main.cpp
-	mkdir -p bin
-	$(CC) $^ -I $(INCDIR) -o $@ $(LIB) -g $(extra)
+	mkdir -p explorers
+	$(CC) $^ -s USE_SDL=2 -o $(TARGET) --preload-file $(ASSETDIR)
+
+server:
+	python2 -m SimpleHTTPServer
 
 clean:
 	rm -r $(TARGET)

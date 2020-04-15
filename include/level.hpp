@@ -45,6 +45,11 @@
 #include "materials.hpp"
 #include "tilemap.hpp"
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 class level {
 public:
   int id;
@@ -361,4 +366,10 @@ public:
       TEXTS[4].draw(renderer, origin_x, origin_y, width * TILE_SIZE * scale_factor / 80);
   }
 };
+
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif

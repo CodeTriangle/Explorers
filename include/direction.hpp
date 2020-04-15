@@ -35,6 +35,10 @@
 #ifndef DIRECTION_HPP
 #define DIRECTION_HPP
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum { STATIC = -1,
 	       NORTH = 0,
 	       EAST = 1,
@@ -61,5 +65,9 @@ void coords_next_to(int r, int c, direction d, int *tr, int *tc) {
   else
     *tc = c + ((d == WEST) ? -1 : 1);
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

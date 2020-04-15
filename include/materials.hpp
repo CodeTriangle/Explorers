@@ -47,6 +47,11 @@
 
 #include "tilemap.hpp"
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 std::map<std::string, tile> MATERIALS;
 std::map<char, std::array<tile*, 3>> CHARS;
 std::map<std::string, SDL_Surface*> SURFACES;
@@ -200,5 +205,10 @@ tile* player(int d, bool f) {
     sprintf(c, "PLAYER%d", d);
   return &MATERIALS[c];
 }
+
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
