@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Emscripten-Generated Code</title>
+    <style>
+      body { margin: 0; }
+      .emscripten { padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
+      canvas.emscripten { border: 0px none; background-color: black; }
+    </style>
+  </head>
+  <body>
+    <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+    <script type='text/javascript'>
+      var Module = {
+        preRun: [],
+        postRun: [],
+        printErr: function(text) {
+          if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+          console.error(text);
+        },
+        canvas: document.getElementById('canvas'),
+        totalDependencies: 0
+      };
+      window.onerror = function() {
+        console.log('Exception thrown, see JavaScript console');
+      };
+    </script>
+    {{{ SCRIPT }}}
+  </body>
+</html>

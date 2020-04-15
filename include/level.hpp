@@ -58,6 +58,7 @@ public:
   int enterp, exitp;
   int scale_factor;
   int origin_x, origin_y;
+  int display_h, display_w;
   int player_or, player_oc;
   int player_r, player_c;
   int buttons, buttons_down;
@@ -157,6 +158,7 @@ public:
     char a[12];
     sprintf(a, "assets/%d.lv", id);
     load(a);
+    justify();
   }
 
   void clear() {
@@ -165,10 +167,17 @@ public:
     rubble.clear();
   }
 
+  void justify() {
+    justify(display_w, display_h);
+  }
+
   void justify(int dw, int dh) {
-    scale_factor = std::min(dw / (8 * 16), dh / (6 * 16));
+    scale_factor = std::min(dw / (8 * 16), dh / (8 * 16));
     origin_x = dw / 2 - width * 16 * scale_factor / 2;
-    origin_y = dh / 2 - height * 16 * scale_factor / 2; 
+    origin_y = dh / 2 - height * 16 * scale_factor / 2;
+    
+    display_w = dw;
+    display_h = dh;
   }
 
   void travel_to_future() {
@@ -204,7 +213,7 @@ public:
 	d == exitd) {
       if (future) {
 	id++;
-	if (id < 6)
+	if (id < 7)
 	  reload();
 	else
 	  clear();
@@ -300,19 +309,19 @@ public:
   }
 
   void draw() {
-    if (id < 6) {
+    if (id < 7) {
       back.draw(renderer, origin_x, origin_y, scale_factor);
       if (future)
 	rubble.draw(renderer, origin_x, origin_y, scale_factor);
       fore.draw(renderer, origin_x, origin_y, scale_factor);
 
-      if (future) TEXTS[0].draw(renderer, origin_x, origin_y - 32, 2);
-      else TEXTS[1].draw(renderer, origin_x, origin_y - 32, 2);
+      if (future) TEXTS[0].draw(renderer, origin_x, origin_y - 64, 4);
+      else TEXTS[1].draw(renderer, origin_x, origin_y - 64, 4);
 
       if (id == 1)
-	TEXTS[2].draw(renderer, origin_x, origin_y - 16, 2);
+	TEXTS[2].draw(renderer, origin_x, origin_y - 32, 4);
       else
-	TEXTS[3].draw(renderer, origin_x, origin_y - 16, 2);
+	TEXTS[3].draw(renderer, origin_x, origin_y - 32, 4);
     
       // I was in a hurry so this code is not very consise
     

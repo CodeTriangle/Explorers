@@ -4,15 +4,16 @@ SRCDIR := src
 BUNDLEDIR := Explorers
 INCDIR := include
 ASSETDIR := assets
-TARGET := explorers/index.html
+TARGETDIR := generated
+TARGET := $(TARGETDIR)/index.html
 
-VERSION := 1.1.1
+VERSION := 1.2.0
 
 $(TARGET): $(SRCDIR)/main.cpp
-	mkdir -p explorers
-	$(CC) $^ -s USE_SDL=2 -o $(TARGET) --preload-file $(ASSETDIR)
+	mkdir -p $(TARGETDIR)
+	$(CC) $^ -s USE_SDL=2 -o $(TARGET) --preload-file $(ASSETDIR) --shell-file assets/shell_minimal.html -O3
 
-server:
+serve:
 	python2 -m SimpleHTTPServer
 
 clean:
@@ -20,6 +21,6 @@ clean:
 
 bundle:
 	mkdir -p $(BUNDLEDIR)
-	cp $(TARGET) LICENSE -t $(BUNDLEDIR)
-	cp -r assets -t $(BUNDLEDIR)
-	tar -czvf $(BUNDLEDIR)-$(VERSION).tar.gz $(BUNDLEDIR)
+	rm -r $(BUNDLEDIR)/*
+	cp $(TARGETDIR)/* LICENSE -t $(BUNDLEDIR)
+	zip -r $(BUNDLEDIR)-$(VERSION).zip $(BUNDLEDIR)
